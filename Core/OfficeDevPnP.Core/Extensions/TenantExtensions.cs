@@ -33,17 +33,20 @@ namespace Microsoft.SharePoint.Client
     {
         const string SITE_STATUS_RECYCLED = "Recycled";
 
-#if !ONPREMISES
-        #region Provisioning
 
+        #region Provisioning
+#if !ONPREMISES
         public static void ApplyProvisionHierarchy(this Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation = null)
         {
             SiteToTemplateConversion engine = new SiteToTemplateConversion();
             engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
         }
+#endif
         #endregion
 
+
         #region Site collection creation
+#if !SP2013
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
         /// </summary>
@@ -153,6 +156,43 @@ namespace Microsoft.SharePoint.Client
             };
             return tenant.CreateSiteCollection(siteCol, removeFromRecycleBin, wait, timeoutFunction);
         }
+#else
+        /// <summary>
+        /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="properties">Describes the site collection to be created</param>
+        public static void CreateSiteCollection(this Tenant tenant, SiteEntity properties)
+        {
+            SiteCreationProperties newsite = new SiteCreationProperties();
+            newsite.Url = properties.Url;
+            newsite.Owner = properties.SiteOwnerLogin;
+            newsite.Template = properties.Template;
+            newsite.Title = properties.Title;
+            newsite.StorageMaximumLevel = properties.StorageMaximumLevel;
+            newsite.StorageWarningLevel = properties.StorageWarningLevel;
+            newsite.TimeZoneId = properties.TimeZoneId;
+            newsite.UserCodeMaximumLevel = properties.UserCodeMaximumLevel;
+            newsite.UserCodeWarningLevel = properties.UserCodeWarningLevel;
+            newsite.Lcid = properties.Lcid;
+
+            try
+            {
+                tenant.CreateSite(newsite);
+                tenant.Context.ExecuteQueryRetry();
+            }
+            catch (Exception ex)
+            {
+                // Eat the siteSubscription exception to make the same code work for MT as on-prem April 2014 CU+
+                if (ex.Message.IndexOf("Parameter name: siteSubscription") == -1)
+                {
+                    throw;
+                }
+            }
+        }
+#endif
+
+
         #endregion
 
         #region Site status checks
@@ -319,6 +359,18 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Site collection deletion
+
+        /// <summary>
+        /// Deletes a site collection
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">Url of the site collection to delete</param>
+        /// <param name="useRecycleBin">Leave the deleted site collection in the site collection recycle bin</param>
+        public static void DeleteSiteCollection(this Tenant tenant, string siteFullUrl, bool useRecycleBin = true)
+        {
+            DeleteSiteCollection(tenant, siteFullUrl, useRecycleBin);
+        }
+
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -366,8 +418,7 @@ namespace Microsoft.SharePoint.Client
                 tenant.Context.Load(op2, i => i.IsComplete, i => i.PollingInterval);
                 tenant.Context.ExecuteQueryRetry();
 
-                succeeded = WaitForIsComplete(tenant, op2, timeoutFunction,
-                    TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
+                succeeded = WaitForIsComplete(tenant, op2, timeoutFunction, TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
                 ret = succeeded;
             }
             return ret;
@@ -392,15 +443,27 @@ namespace Microsoft.SharePoint.Client
             }
             if (wait)
             {
-                var succeeded = WaitForIsComplete(tenant, op, timeoutFunction,
-                    TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
+                var succeeded = WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
                 ret = succeeded;
             }
             return ret;
         }
+/*
+        /// <summary>
+        /// Deletes a site collection
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">Url of the site collection to delete</param>
+        public static void DeleteSiteCollection(this Tenant tenant, string siteFullUrl)
+        {
+            tenant.RemoveSite(siteFullUrl);
+            tenant.Context.ExecuteQueryRetry();
+        }
+*/
         #endregion
 
         #region Site collection properties
+
         /// <summary>
         /// Gets the ID of site collection with specified URL
         /// </summary>
@@ -451,6 +514,7 @@ namespace Microsoft.SharePoint.Client
             return templates;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Sets tenant site Properties
         /// </summary>
@@ -466,10 +530,28 @@ namespace Microsoft.SharePoint.Client
         /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
         /// <param name="commentsOnSitePagesDisabled">Boolean value which Enables/Disables comments on the Site Pages</param>
         /// <param name="socialBarOnSitePagesDisabled">Boolean value which Enables/Disables likes and view count on the Site Pages</param>
+        /// <param name="defaultLinkPermission">Specifies the default link permission for the site collection</param>
         /// <param name="defaultSharingLinkType">Specifies the default link type for the site collection</param>
         /// <param name="wait">Id true this function only returns when the tenant properties are set, if false it will return immediately</param>
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the tenant properties to be set. If set will override the wait variable. Return true to cancel the wait loop.</param>
-        /// <param name="defaultLinkPermission">Specifies the default link permission for the site collection</param>
+#else
+        /// <summary>
+        /// Sets tenant site Properties
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">full URL of site</param>
+        /// <param name="title">site title</param>
+        /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
+        /// <param name="sharingCapability">SharingCapabilities enumeration value (i.e. Disabled/ExternalUserSharingOnly/ExternalUserAndGuestSharing/ExistingExternalUserSharingOnly)</param>
+        /// <param name="storageMaximumLevel">A limit on all disk space used by the site collection</param>
+        /// <param name="storageWarningLevel">A storage warning level for when administrators of the site collection receive advance notice before available storage is expended.</param>
+        /// <param name="userCodeMaximumLevel">A value that represents the maximum allowed resource usage for the site/</param>
+        /// <param name="userCodeWarningLevel">A value that determines the level of resource usage at which a warning e-mail message is sent</param>
+        /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
+        /// <param name="wait">Id true this function only returns when the tenant properties are set, if false it will return immediately</param>
+        /// <param name="timeoutFunction">An optional function that will be called while waiting for the tenant properties to be set. If set will override the wait variable. Return true to cancel the wait loop.</param>
+#endif
+
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
             string title = null,
             bool? allowSelfServiceUpgrade = null,
@@ -479,11 +561,14 @@ namespace Microsoft.SharePoint.Client
             double? userCodeMaximumLevel = null,
             double? userCodeWarningLevel = null,
             bool? noScriptSite = null,
+#if !SP2013 && !SP2016 && !SP2019
             bool? commentsOnSitePagesDisabled = null,
             bool? socialBarOnSitePagesDisabled = null,
             SharingPermissionType? defaultLinkPermission = null,
             SharingLinkType? defaultSharingLinkType = null,
-            bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
+#endif
+            bool wait = true,
+            Func<TenantOperationMessage, bool> timeoutFunction = null
             )
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
@@ -503,18 +588,22 @@ namespace Microsoft.SharePoint.Client
                     siteProps.UserCodeMaximumLevel = userCodeMaximumLevel.Value;
                 if (userCodeWarningLevel != null)
                     siteProps.UserCodeWarningLevel = userCodeWarningLevel.Value;
+#if !SP2013 && !SP2016 && !SP2019
                 if (defaultLinkPermission != null)
                     siteProps.DefaultLinkPermission = defaultLinkPermission.Value;
                 if (defaultSharingLinkType != null)
                     siteProps.DefaultSharingLinkType = defaultSharingLinkType.Value;
+#endif
                 if (title != null)
                     siteProps.Title = title;
                 if (noScriptSite != null)
                     siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
+#if !SP2013 && !SP2016 && !SP2019
                 if (commentsOnSitePagesDisabled != null)
                     siteProps.CommentsOnSitePagesDisabled = commentsOnSitePagesDisabled.Value;
                 if (socialBarOnSitePagesDisabled != null)
                     siteProps.SocialBarOnSitePagesDisabled = socialBarOnSitePagesDisabled.Value;
+#endif
 
                 var op = siteProps.Update();
                 tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
@@ -565,7 +654,9 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
+
         #region Site collection administrators
+#if !ONPREMISES
         /// <summary>
         /// Add a site collection administrator to a site collection
         /// </summary>
@@ -599,9 +690,11 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
+#endif
         #endregion
 
         #region Site enumeration
+#if !ONPREMISES
         /// <summary>
         /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
         /// </summary>
@@ -728,7 +821,7 @@ namespace Microsoft.SharePoint.Client
             return client;
         }
 #endif
-
+#endif
         #endregion
 
         #region Private helper methods
@@ -825,10 +918,11 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
+
         #endregion
 
         #region Site Classification configuration
-
+#if !ONPREMISES
         /// <summary>
         /// Enables Site Classifications for the target tenant 
         /// </summary>
@@ -897,10 +991,11 @@ namespace Microsoft.SharePoint.Client
         {
             SiteClassificationsUtility.DisableSiteClassifications(accessToken);
         }
-
+#endif
         #endregion
 
         #region Site groupify
+#if !ONPREMISES
         /// <summary>
         /// Connect an Office 365 group to an existing SharePoint site collection
         /// </summary>
@@ -955,10 +1050,11 @@ namespace Microsoft.SharePoint.Client
             tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
             tenant.Context.ExecuteQueryRetry();
         }
+#endif
         #endregion
 
         #region User rights
-
+#if !ONPREMISES
         public static Boolean IsCurrentUserTenantAdmin(ClientContext clientContext)
         {
             // Get the URL of the current site collection
@@ -998,11 +1094,12 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
+#endif
 
         #endregion
 
         #region Enable Comm Site
-
+#if !ONPREMISES
         private static readonly Guid COMMSITEDESIGNPACKAGEID = new Guid("d604dac3-50d3-405e-9ab9-d4713cda74ef");
         /// <summary>
         /// Enable communication site on the root site of a tenant
@@ -1020,63 +1117,15 @@ namespace Microsoft.SharePoint.Client
             tenant.EnableCommSite(siteUrl, COMMSITEDESIGNPACKAGEID);
             tenant.Context.ExecuteQueryRetry();
         }
-        #endregion
-
-#else
-        #region Site collection creation
-        /// <summary>
-        /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="properties">Describes the site collection to be created</param>
-        public static void CreateSiteCollection(this Tenant tenant, SiteEntity properties)
-        {
-            SiteCreationProperties newsite = new SiteCreationProperties();
-            newsite.Url = properties.Url;
-            newsite.Owner = properties.SiteOwnerLogin;
-            newsite.Template = properties.Template;
-            newsite.Title = properties.Title;
-            newsite.StorageMaximumLevel = properties.StorageMaximumLevel;
-            newsite.StorageWarningLevel = properties.StorageWarningLevel;
-            newsite.TimeZoneId = properties.TimeZoneId;
-            newsite.UserCodeMaximumLevel = properties.UserCodeMaximumLevel;
-            newsite.UserCodeWarningLevel = properties.UserCodeWarningLevel;
-            newsite.Lcid = properties.Lcid;
-
-            try
-            {
-                tenant.CreateSite(newsite);
-                tenant.Context.ExecuteQueryRetry();
-            }
-            catch (Exception ex)
-            {
-                // Eat the siteSubscription exception to make the same code work for MT as on-prem April 2014 CU+
-                if (ex.Message.IndexOf("Parameter name: siteSubscription") == -1)
-                {
-                    throw;
-                }
-            }
-        }
-        #endregion
-
-        #region Site collection deletion
-        /// <summary>
-        /// Deletes a site collection
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">Url of the site collection to delete</param>
-        public static void DeleteSiteCollection(this Tenant tenant, string siteFullUrl)
-        {
-            tenant.RemoveSite(siteFullUrl);
-            tenant.Context.ExecuteQueryRetry();
-        }
-        #endregion
 #endif
+        #endregion
 
-#if !ONPREMISES || SP2019
+
+
+
 
         #region ClientSide Package Deployment
-
+#if !SP2013 && !SP2016
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
@@ -1093,11 +1142,12 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
+#endif
         #endregion
 
-#endif
-        #region Utilities
 
+
+        #region Utilities
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
         {
@@ -1111,7 +1161,6 @@ namespace Microsoft.SharePoint.Client
             var tokenEndpointUrl = json["token_endpoint"].ToString();
             return GetTenantIdFromAadEndpointUrl(tokenEndpointUrl);
         }
-#endif
 
         private static string GetTenantNameFromUrl(string tenantUrl)
         {
@@ -1129,6 +1178,7 @@ namespace Microsoft.SharePoint.Client
         {
             return GetSubstringFromMiddle(aadEndpointUrl, "https://login.microsoftonline.com/", "/oauth2/");
         }
+#endif
 
         private static string GetSubstringFromMiddle(string originalString, string prefix, string suffix)
         {

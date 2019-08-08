@@ -14,7 +14,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     internal class ObjectClientSidePages : ObjectHandlerBase
     {
         private const string ContentTypeIdField = "ContentTypeId";
@@ -213,8 +213,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         page.SetCustomPageHeader(serverRelativeImageUrl);
                                     }
 
-                                    page.PageHeader.TextAlignment = (Pages.ClientSidePageHeaderTitleAlignment)Enum.Parse(typeof(ClientSidePageHeaderTextAlignment), clientSidePage.Header.TextAlignment.ToString());
                                     page.PageHeader.LayoutType = (Pages.ClientSidePageHeaderLayoutType)Enum.Parse(typeof(ClientSidePageHeaderLayoutType), clientSidePage.Header.LayoutType.ToString());
+#if !SP2019
+                                    page.PageHeader.TextAlignment = (Pages.ClientSidePageHeaderTitleAlignment)Enum.Parse(typeof(ClientSidePageHeaderTextAlignment), clientSidePage.Header.TextAlignment.ToString());
                                     page.PageHeader.ShowTopicHeader = clientSidePage.Header.ShowTopicHeader;
                                     page.PageHeader.ShowPublishDate = clientSidePage.Header.ShowPublishDate;
                                     page.PageHeader.TopicHeader = clientSidePage.Header.TopicHeader;
@@ -222,6 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     page.PageHeader.Authors = clientSidePage.Header.Authors;
                                     page.PageHeader.AuthorByLine = clientSidePage.Header.AuthorByLine;
                                     page.PageHeader.AuthorByLineId = clientSidePage.Header.AuthorByLineId;
+#endif
                                     break;
                                 }
                         }
@@ -349,9 +351,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.Image:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Image);
                                                     break;
-                                                case WebPartType.BingMap:
-                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.BingMap);
-                                                    break;
                                                 case WebPartType.ContentEmbed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentEmbed);
                                                     break;
@@ -363,9 +362,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     break;
                                                 case WebPartType.Events:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Events);
-                                                    break;
-                                                case WebPartType.GroupCalendar:
-                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.GroupCalendar);
                                                     break;
                                                 case WebPartType.Hero:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Hero);
@@ -391,9 +387,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.People:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.People);
                                                     break;
-                                                case WebPartType.PowerBIReportEmbed:
-                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.PowerBIReportEmbed);
-                                                    break;
                                                 case WebPartType.QuickChart:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.QuickChart);
                                                     break;
@@ -415,15 +408,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.Divider:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Divider);
                                                     break;
-                                                case WebPartType.MicrosoftForms:
-                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
-                                                    break;
                                                 case WebPartType.Spacer:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
+                                                    break;
+#if !SP2019
+                                                case WebPartType.BingMap:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.BingMap);
                                                     break;
                                                 case WebPartType.ClientWebPart:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ClientWebPart);
                                                     break;
+                                                case WebPartType.MicrosoftForms:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
+                                                    break;
+                                                case WebPartType.PowerBIReportEmbed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.PowerBIReportEmbed);
+                                                    break;
+                                                case WebPartType.GroupCalendar:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.GroupCalendar);
+                                                    break;
+#endif
                                             }
 
                                             baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
@@ -562,7 +566,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
+#if !SP2019
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
+#endif
                     {
                         // Set commenting, ignore on pages of the type Home or page templates
                         if (page.LayoutType != Pages.ClientSidePageLayoutType.Home && !clientSidePage.PromoteAsTemplate)
@@ -647,4 +653,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 #endif
-}
+                                            }

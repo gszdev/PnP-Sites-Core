@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                                     value = userFieldValue.Email;
 #else
-                                value = userFieldValue.LookupValue;
+                                    value = userFieldValue.LookupValue;
 #endif
                                 }
                                 break;

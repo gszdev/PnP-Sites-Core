@@ -370,7 +370,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             // Set resources
             if (templateContentType.Name.ContainsResourceToken())
             {

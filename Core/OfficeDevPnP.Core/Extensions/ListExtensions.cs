@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Utilities.Async;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Utilities.Webhooks;
 #endif
 
@@ -148,7 +148,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Webhooks
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Add the a Webhook subscription to a list
         /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
@@ -1031,7 +1031,7 @@ namespace Microsoft.SharePoint.Client
         }
 
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// <see href="http://blogs.msdn.com/b/vesku/archive/2014/03/20/office365-multilingual-content-types-site-columns-and-site-other-elements.aspx"/>
@@ -1073,9 +1073,7 @@ namespace Microsoft.SharePoint.Client
             List list = web.GetList(listTitle);
             SetLocalizationLabelsForList(list, cultureName, titleResource, descriptionResource);
         }
-#endif
 
-#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// </summary>

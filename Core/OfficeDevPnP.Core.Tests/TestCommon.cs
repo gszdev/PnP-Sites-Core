@@ -50,9 +50,9 @@ namespace OfficeDevPnP.Core.Tests
 
             // Read configuration data
             TenantUrl = AppSetting("SPOTenantUrl");
-            DevSiteUrl = AppSetting("SPODevSiteUrl");            
+            DevSiteUrl = AppSetting("SPODevSiteUrl");
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (string.IsNullOrEmpty(TenantUrl))
             {
                 throw new ConfigurationErrorsException("Tenant site Url in App.config are not set up.");

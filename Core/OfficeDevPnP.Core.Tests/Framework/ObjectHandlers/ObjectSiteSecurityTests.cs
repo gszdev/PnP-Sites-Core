@@ -61,7 +61,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 originalAssociatedMemberGroupId = web.AssociatedMemberGroup.ServerObjectIsNull == true ? -1 : web.AssociatedMemberGroup.Id;
                 originalAssociatedVisitorGroupId = web.AssociatedVisitorGroup.ServerObjectIsNull == true ? -1 : web.AssociatedVisitorGroup.Id;
                 originalIsNoScriptSite = web.IsNoScriptSite();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (originalIsNoScriptSite)
                 {
                     AllowScripting(web.Url, true);
@@ -108,7 +108,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.Load(memberGroup);
                 ctx.Load(ctx.Web, w => w.Url);
                 ctx.ExecuteQueryRetry();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 AllowScripting(ctx.Web.Url, !originalIsNoScriptSite);
 #endif
                 if (memberGroup.ServerObjectIsNull == false)
@@ -508,7 +508,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         // ensure #2127 does not occur again; specifically check that not too many groups are created
         [TestMethod()]
         public async Task CanExportAndImportAssociatedGroupsProperlyInNewNoScriptSite()
@@ -563,12 +563,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     Assert.AreEqual(newSiteTitle + " Members", web.AssociatedMemberGroup.Title);
                     Assert.AreEqual(newSiteTitle + " Owners", web.AssociatedOwnerGroup.Title);
                 }
-            } finally
+            }
+            finally
             {
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !SP2019
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
+
                 }
             }
         }

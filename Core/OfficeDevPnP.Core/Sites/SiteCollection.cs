@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !SP2013 && !SP2016
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -366,7 +366,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
-
+#if !SP2019
         /// <summary>
         /// Groupifies a classic team site by creating a group for it and connecting the site with the newly created group
         /// </summary>
@@ -473,7 +473,7 @@ namespace OfficeDevPnP.Core.Sites
                         if (Convert.ToInt32(responseJson["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["SiteStatus"]) == 1)
 #else
                         if (responseJson["SiteStatus"].Value<int>() == 2 || responseJson["SiteStatus"].Value<int>() == 1)
-#endif                  
+#endif
                         {
                             responseContext = clientContext;
                         }
@@ -491,7 +491,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
-
+#endif
 
         private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {

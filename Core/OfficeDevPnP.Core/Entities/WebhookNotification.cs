@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !SP20163 && !SP2016
 using Newtonsoft.Json;
 using System;
 

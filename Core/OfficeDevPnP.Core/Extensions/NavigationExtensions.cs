@@ -718,7 +718,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     searchNavigation[i].DeleteObject();
                 }
-                web.Context.ExecuteQueryRetry();
+                web.Context.ExecuteQueryRetry();                
 #if !ONPREMISES
             }
             else if (navigationType == NavigationType.Footer)
@@ -887,7 +887,7 @@ namespace Microsoft.SharePoint.Client
             targetAction.Description = customAction.Description;
             targetAction.Location = customAction.Location;
             targetAction.Sequence = customAction.Sequence;
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             targetAction.ClientSideComponentId = customAction.ClientSideComponentId;
             targetAction.ClientSideComponentProperties = customAction.ClientSideComponentProperties;
 #endif

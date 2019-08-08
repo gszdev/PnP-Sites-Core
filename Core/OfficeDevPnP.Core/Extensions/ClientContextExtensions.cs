@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using OfficeDevPnP.Core.Utilities.Context;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Sites;
 #endif
 
@@ -753,7 +753,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// BETA: Creates a Communication Site Collection
         /// </summary>
@@ -780,6 +780,7 @@ namespace Microsoft.SharePoint.Client
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
 
+#if !SP2019
         /// <summary>
         /// BETA: Groupifies a classic Team Site Collection
         /// </summary>
@@ -792,6 +793,7 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
         }
+#endif
 
         /// <summary>
         /// Checks if an alias is already used for an office 365 group or not

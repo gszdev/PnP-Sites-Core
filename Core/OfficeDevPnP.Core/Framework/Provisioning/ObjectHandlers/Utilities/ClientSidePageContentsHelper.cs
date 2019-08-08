@@ -12,7 +12,7 @@ using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Helper class holding public methods that used by the client side page object handler. The purpose is to be able to reuse these public methods in a extensibility provider
     /// </summary>
@@ -76,6 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             TranslateX = pageToExtract.PageHeader.TranslateX,
                             TranslateY = pageToExtract.PageHeader.TranslateY,
                             LayoutType = (ClientSidePageHeaderLayoutType)Enum.Parse(typeof(Pages.ClientSidePageHeaderLayoutType), pageToExtract.PageHeader.LayoutType.ToString()),
+#if !SP2019
                             TextAlignment = (ClientSidePageHeaderTextAlignment)Enum.Parse(typeof(Pages.ClientSidePageHeaderTitleAlignment), pageToExtract.PageHeader.TextAlignment.ToString()),
                             ShowTopicHeader = pageToExtract.PageHeader.ShowTopicHeader,
                             ShowPublishDate = pageToExtract.PageHeader.ShowPublishDate,
@@ -84,6 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             Authors = pageToExtract.PageHeader.Authors,
                             AuthorByLine = pageToExtract.PageHeader.AuthorByLine,
                             AuthorByLineId = pageToExtract.PageHeader.AuthorByLineId,
+#endif
                         };
                         extractedPageInstance.Header = extractedHeader;
                     }
@@ -158,9 +160,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.ContentRollup:
                                             controlInstance.Type = WebPartType.ContentRollup;
                                             break;
-                                        case Pages.DefaultClientSideWebParts.BingMap:
-                                            controlInstance.Type = WebPartType.BingMap;
-                                            break;
+                                        
                                         case Pages.DefaultClientSideWebParts.ContentEmbed:
                                             controlInstance.Type = WebPartType.ContentEmbed;
                                             break;
@@ -181,10 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                         case Pages.DefaultClientSideWebParts.NewsReel:
                                             controlInstance.Type = WebPartType.NewsReel;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.PowerBIReportEmbed:
-                                            controlInstance.Type = WebPartType.PowerBIReportEmbed;
-                                            break;
+                                            break;                                        
                                         case Pages.DefaultClientSideWebParts.QuickChart:
                                             controlInstance.Type = WebPartType.QuickChart;
                                             break;
@@ -199,10 +196,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                         case Pages.DefaultClientSideWebParts.Events:
                                             controlInstance.Type = WebPartType.Events;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.GroupCalendar:
-                                            controlInstance.Type = WebPartType.GroupCalendar;
-                                            break;
+                                            break;                                        
                                         case Pages.DefaultClientSideWebParts.Hero:
                                             controlInstance.Type = WebPartType.Hero;
                                             break;
@@ -224,18 +218,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.Divider:
                                             controlInstance.Type = WebPartType.Divider;
                                             break;
-                                        case Pages.DefaultClientSideWebParts.MicrosoftForms:
-                                            controlInstance.Type = WebPartType.MicrosoftForms;
-                                            break;
+                                        
                                         case Pages.DefaultClientSideWebParts.Spacer:
                                             controlInstance.Type = WebPartType.Spacer;
+                                            break;
+                                        
+                                        case Pages.DefaultClientSideWebParts.ThirdParty:
+                                            controlInstance.Type = WebPartType.Custom;
+                                            break;
+#if !SP2019
+                                        case Pages.DefaultClientSideWebParts.BingMap:
+                                            controlInstance.Type = WebPartType.BingMap;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.PowerBIReportEmbed:
+                                            controlInstance.Type = WebPartType.PowerBIReportEmbed;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.MicrosoftForms:
+                                            controlInstance.Type = WebPartType.MicrosoftForms;
                                             break;
                                         case Pages.DefaultClientSideWebParts.ClientWebPart:
                                             controlInstance.Type = WebPartType.ClientWebPart;
                                             break;
-                                        case Pages.DefaultClientSideWebParts.ThirdParty:
-                                            controlInstance.Type = WebPartType.Custom;
+                                        case Pages.DefaultClientSideWebParts.GroupCalendar:
+                                            controlInstance.Type = WebPartType.GroupCalendar;
                                             break;
+#endif
                                         default:
                                             controlInstance.Type = WebPartType.Custom;
                                             break;
@@ -424,7 +431,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-        #region Helper methods
+                                            #region Helper methods
         private string GetParentIdValue(string contentTypeId)
         {
             int length = 0;
@@ -548,7 +555,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-        #endregion
+                                            #endregion
     }
 #endif
-}
+                                    }

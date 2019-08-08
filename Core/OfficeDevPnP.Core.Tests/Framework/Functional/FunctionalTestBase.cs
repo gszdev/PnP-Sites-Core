@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
 
-#if !ONPREMISES                    
+#if !SP2013 && !SP2016
                     // Apply noscript setting
                     if (noScriptSite)
                     {
@@ -80,7 +80,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
 #endregion
 
-#region Helper methods
+        #region Helper methods
 #if !ONPREMISES
         internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
         {
@@ -315,7 +315,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
-#endregion
+        #endregion
 
     }
 }

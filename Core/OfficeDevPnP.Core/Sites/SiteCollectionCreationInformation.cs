@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !SP2013 && !SP2016
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,6 +99,7 @@ namespace OfficeDevPnP.Core.Sites
         }
     }
 
+#if !SP2019
     /// <summary>
     /// Class for site groupify information
     /// </summary>
@@ -134,7 +135,7 @@ namespace OfficeDevPnP.Core.Sites
         }
 
     }
-
+#endif
 
     /// <summary>
     /// Class for site creation information
