@@ -183,7 +183,8 @@ namespace Microsoft.SharePoint.Client
                     var response = wex.Response as HttpWebResponse;
                     // Check if request was throttled - http status code 429
                     // Check is request failed due to server unavailable - http status code 503
-                    if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
+                    if (response != null 
+                        && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
 
@@ -219,9 +220,36 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
+                        var errorSb = new System.Text.StringBuilder();
+                        errorSb.AppendLine(wex.ToString());
+
+                        if (response != null)
+                        {
+                            //if(response.Headers["SPRequestGuid"] != null)
+                            if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase)))
+                            {
+                                var spRequestGuid = response.Headers["SPRequestGuid"];
+                                errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                            }
+                        }
+
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
                         throw;
                     }
+                }
+                catch (Microsoft.SharePoint.Client.ServerException serverEx)
+                {
+                    var errorSb = new System.Text.StringBuilder();
+
+                    errorSb.AppendLine(serverEx.ToString());
+                    errorSb.AppendLine($"ServerErrorCode: {serverEx.ServerErrorCode}");
+                    errorSb.AppendLine($"ServerErrorTypeName: {serverEx.ServerErrorTypeName}");
+                    errorSb.AppendLine($"ServerErrorTraceCorrelationId: {serverEx.ServerErrorTraceCorrelationId}");
+                    errorSb.AppendLine($"ServerErrorValue: {serverEx.ServerErrorValue}");
+                    errorSb.AppendLine($"ServerErrorDetails: {serverEx.ServerErrorDetails}");
+
+                    Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
+                    throw;
                 }
             }
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");

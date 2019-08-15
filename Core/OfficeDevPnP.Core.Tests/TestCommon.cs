@@ -101,9 +101,17 @@ namespace OfficeDevPnP.Core.Tests
                 }
 #endif
 
+                var spoUseAppOnly = false;
+
+                var spoUseAppOnlyValue = AppSetting("SPOUseAppOnly");
+                if (!string.IsNullOrEmpty(spoUseAppOnlyValue))
+                {
+                    bool.TryParse(spoUseAppOnlyValue, out spoUseAppOnly);
+                }
 #if !ONPREMISES
-                if (!String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
-                    !String.IsNullOrEmpty(AppSetting("SPOPassword")))
+                if (spoUseAppOnly == false
+                    && !String.IsNullOrEmpty(AppSetting("SPOUserName")) 
+                    && !String.IsNullOrEmpty(AppSetting("SPOPassword")))
                 {
                     UserName = AppSetting("SPOUserName");
                     var password = AppSetting("SPOPassword");
@@ -131,11 +139,13 @@ namespace OfficeDevPnP.Core.Tests
                 else if (onPremUseHighTrustCertificate == true
                     || 
                     (
-                        !String.IsNullOrEmpty(AppSetting("AppId")) 
+                        //!String.IsNullOrEmpty(AppSetting("AppId")) 
+                        !String.IsNullOrEmpty(AppSetting("HighTrustClientId"))
                         && !String.IsNullOrEmpty(AppSetting("HighTrustIssuerId")))
                     )
                 {
-                    AppId = AppSetting("AppId");
+                    //AppId = AppSetting("AppId");
+                    HighTrustClientId = AppSetting("HighTrustClientId");
                     HighTrustCertificatePassword = AppSetting("HighTrustCertificatePassword");
                     HighTrustCertificatePath = AppSetting("HighTrustCertificatePath");
                     HighTrustIssuerId = AppSetting("HighTrustIssuerId");
@@ -174,6 +184,16 @@ namespace OfficeDevPnP.Core.Tests
         public static ICredentials Credentials { get; set; }
         public static string AppId { get; set; }
         static string AppSecret { get; set; }
+
+        /// <summary>
+        /// The ClientID is the web application's client ID (GUID) that was generated on appregnew.aspx / same value as the HighTrustIssuerId
+        /// <remarks>
+        /// https://docs.microsoft.com/en-us/sharepoint/dev/sp-add-ins/package-and-publish-high-trust-sharepoint-add-ins
+        /// 
+        /// If the high-trust SharePoint Add-in has its own certificate that it is not sharing with other SharePoint Add-ins, the IssuerId is the same as the ClientId
+        /// </remarks>
+        /// </summary>
+        public static string HighTrustClientId { get; set; }
 
         /// <summary>
         /// The path to the PFX file for the High Trust

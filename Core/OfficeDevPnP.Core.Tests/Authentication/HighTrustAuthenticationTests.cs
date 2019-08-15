@@ -31,10 +31,13 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         public void CertificateFileAppOnlyAuthenticationTest()
         {
             string siteUrl = TestCommon.DevSiteUrl;
-            string clientId = TestCommon.AppId;
+            //string clientId = TestCommon.AppId;
+            string clientId = TestCommon.HighTrustClientId;
             string certificatePath = TestCommon.HighTrustCertificatePath;
             string certificatePassword = TestCommon.HighTrustCertificatePassword;
             string certificateIssuerId = TestCommon.HighTrustIssuerId;
+
+
 
             if (String.IsNullOrEmpty(clientId) ||
                 String.IsNullOrEmpty(certificatePath) ||
@@ -73,7 +76,8 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         public void CertificateFromStoreAppOnlyAuthenticationTest()
         {
             string siteUrl = TestCommon.DevSiteUrl;
-            string clientId = TestCommon.AppId;
+            //string clientId = TestCommon.AppId;
+            string clientId = TestCommon.HighTrustClientId;
             StoreName? certificateStoreName = TestCommon.HighTrustCertificateStoreName;
             StoreLocation? certificateStoreLocation = TestCommon.HighTrustCertificateStoreLocation;
             string certificateStoreThumbprint = TestCommon.HighTrustCertificateStoreThumbprint;

@@ -35,6 +35,9 @@
     3. App only (O365 & On-premises) 
     -->
 
+    <add key="SPOUseAppOnly" value="false" />
+    <add key="OnPremUseHighTrustCertificate" value="false" />
+
     <!-- Priority 1: For testing against Office 365 provide a username and password -->
     <add key="SPOUserName" value="user@[tenant].onmicrosoft.com" />
     <add key="SPOPassword" value="" />
@@ -63,6 +66,8 @@
     <add key="TestAutomationDatabaseConnectionString" value="" />
 
     <!-- Support for High Trust certificate testing -->
+    <!-- The ClientID is the web application's client ID (GUID) that was generated on appregnew.aspx / same value as the HighTrustIssuerId -->
+    <add key="HighTrustClientId" value="" />
     <!-- Full path to the PFX to be used for the high trust certificate testing -->
     <add key="HighTrustCertificatePath" value="" />
     <!-- Password of the PFX provided through the HighTrustCertificatePath setting -->
