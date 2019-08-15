@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
             // Prepare the default output
             var result = new CanProvisionResult();
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 
             Model.ProvisioningTemplate targetTemplate = null;
 
@@ -51,7 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                 targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages.Count > 0))
             {
                 // First of all check if the currently connected user is a Tenant Admin
+#if !ONPREMISES
                 if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+#else
+                if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext, this.TenantAdminSiteUrl))
+#endif
                 {
                     result.CanProvision = false;
                     result.Issues.Add(new CanProvisionIssue()
@@ -120,7 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                 }
             }
 #else
-            result.CanProvision = false;
+                result.CanProvision = false;
 #endif
             return result;
         }

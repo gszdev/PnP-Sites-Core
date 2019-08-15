@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-tax">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-tax" Version="0">
+      <pnp:TermGroups>
+        <pnp:TermGroup Name="TestTermGroup" ID="21d7d506-1783-4aed-abdf-160f37bd0ca9" Description="Test Term Group" SiteCollectionTermGroup="true">
+          <pnp:TermSets>
+            <pnp:TermSet Name="TestTermset1TestTermGroup" ID="ce70be1b-1772-49e9-a08f-47192d88dd64" Owner="termset1owner@termgroup1" Description="Test Termset 1 Test Term Group" Language="1049" IsOpenForTermCreation="true">
+              <pnp:CustomProperties>
+                <pnp:Property Key="Property1" Value="Value1" />
+                <pnp:Property Key="Property2" Value="Value2" />
+              </pnp:CustomProperties>
+              <pnp:Terms>
+                <pnp:Term Name="Term1Set1Group1" ID="2194b058-c6e0-4805-b875-78cd7d7dfd39" Owner="term1owner@termgroup1" Description="Term1 Set1 Group1" Language="1055" CustomSortOrder="101" IsReused="true" IsDeprecated="true" SourceTermId="bd36d6f6-ee5f-4ce5-961c-93867d8f1f3d">
+                  <pnp:Terms>
+                    <pnp:Term Name="Subterm1Term1Set1Group1" ID="48fd66cb-f7ca-4160-be46-b78876626c09" IsAvailableForTagging="false" IsSourceTerm="false">
+                      <pnp:Terms>
+                        <pnp:Term Name="Subsubterm1Term1Set1Group1" ID="7f43fe4a-7030-4d7e-ab62-5fdaac65ac9b" IsAvailableForTagging="false" IsSourceTerm="false">
+                          <pnp:Terms />
+                        </pnp:Term>
+                      </pnp:Terms>
+                    </pnp:Term>
+                    <pnp:Term Name="Subterm2Term1Set1Group1" ID="b0d92a3a-cbdf-4c6c-8807-54e23da108ee" IsAvailableForTagging="false" IsSourceTerm="false">
+                      <pnp:Terms />
+                    </pnp:Term>
+                  </pnp:Terms>
+                  <pnp:Labels>
+                    <pnp:Label Language="1033" Value="Term1Label1033" IsDefaultForLanguage="true" />
+                    <pnp:Label Language="1023" Value="Term1Label1023" IsDefaultForLanguage="true" />
+                    <pnp:Label Language="1053" Value="Term1Label1053" />
+                  </pnp:Labels>
+                  <pnp:CustomProperties>
+                    <pnp:Property Key="Term1Property1" Value="Value1" />
+                    <pnp:Property Key="Term1Property2" Value="Value2" />
+                  </pnp:CustomProperties>
+                  <pnp:LocalCustomProperties>
+                    <pnp:Property Key="Term1LocalProperty1" Value="Value1" />
+                    <pnp:Property Key="Term1LocalProperty2" Value="Value2" />
+                  </pnp:LocalCustomProperties>
+                </pnp:Term>
+                <pnp:Term Name="Term2Set1Group1" ID="382d3cb1-89f5-4809-b607-1634698e027e" Owner="term2owner@termgroup1" Description="Term2 Set1 Group1" IsAvailableForTagging="false" CustomSortOrder="102" IsSourceTerm="false">
+                  <pnp:Terms />
+                </pnp:Term>
+              </pnp:Terms>
+            </pnp:TermSet>
+            <pnp:TermSet Name="TestTermset2TestTermGroup" ID="d0610999-539c-4949-ba60-0375deea3023" Description="Test Termset 2 Test Term Group" IsAvailableForTagging="false" />
+          </pnp:TermSets>
+          <pnp:Contributors>
+            <pnp:User Name="contributor1@termgroup1" />
+            <pnp:User Name="contributor2@termgroup1" />
+          </pnp:Contributors>
+          <pnp:Managers>
+            <pnp:User Name="manager1@termgroup1" />
+            <pnp:User Name="manager2@termgroup1" />
+          </pnp:Managers>
+        </pnp:TermGroup>
+        <pnp:TermGroup Name="TestTermGroup2" ID="7d4caedf-4ed3-4e2d-ba93-a166b4f173f6" Description="Test Term Group 2">
+          <pnp:TermSets />
+        </pnp:TermGroup>
+      </pnp:TermGroups>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

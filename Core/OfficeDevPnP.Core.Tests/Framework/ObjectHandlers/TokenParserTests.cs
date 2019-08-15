@@ -38,7 +38,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var roleDefinition = ctx.Web.RoleDefinitions.GetById(expectedRoleDefinitionId);
                 ctx.Load(roleDefinition);
 
+                ctx.Web.CreateDefaultAssociatedGroups(string.Empty, string.Empty, string.Empty);
+
                 ctx.ExecuteQueryRetry();
+
+                //ctx.Web.EnsureProperty(x => x.AssociatedOwnerGroup);
+                //ctx.Web.AssociatedOwnerGroup.EnsureProperty(x => x.Id);
 
                 var currentUser = ctx.Web.EnsureProperty(w => w.CurrentUser);
 

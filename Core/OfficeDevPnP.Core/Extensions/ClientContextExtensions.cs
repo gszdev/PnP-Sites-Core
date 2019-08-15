@@ -779,6 +779,7 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
+#endif
 
 #if !SP2019
         /// <summary>
@@ -793,7 +794,6 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
         }
-#endif
 
         /// <summary>
         /// Checks if an alias is already used for an office 365 group or not

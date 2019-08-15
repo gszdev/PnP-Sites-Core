@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-propbag">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-propbag" Version="0">
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" Indexed="true" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
+      </pnp:PropertyBagEntries>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

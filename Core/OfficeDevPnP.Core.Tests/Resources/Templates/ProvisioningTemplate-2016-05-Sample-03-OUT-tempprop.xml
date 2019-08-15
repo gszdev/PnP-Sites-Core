@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-tempprop">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-tempprop" Version="1.2">
+      <pnp:Properties>
+        <pnp:Property Key="Key1" Value="Value1" />
+        <pnp:Property Key="Key2" Value="Value2" />
+        <pnp:Property Key="Key3" Value="Value3" />
+        <pnp:Property Key="Key4" Value="Value4" />
+        <pnp:Property Key="Key5" Value="Value5" />
+      </pnp:Properties>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Parameters>
+      <pnp:Parameter Key="Parameter1">ValueParameter1</pnp:Parameter>
+      <pnp:Parameter Key="Parameter2">ValueParameter2</pnp:Parameter>
+      <pnp:Parameter Key="Parameter3">ValueParameter3</pnp:Parameter>
+      <pnp:Parameter Key="Parameter4">ValueParameter4</pnp:Parameter>
+      <pnp:Parameter Key="Parameter5">ValueParameter5</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-temppar">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-temppar" Version="0" />
+  </pnp:Templates>
+</pnp:Provisioning>

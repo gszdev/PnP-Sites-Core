@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-audit">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-audit" Version="0">
+      <pnp:AuditSettings AuditLogTrimmingRetention="10" TrimAuditLog="true">
+        <pnp:Audit AuditFlag="ProfileChange" />
+        <pnp:Audit AuditFlag="Move" />
+      </pnp:AuditSettings>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

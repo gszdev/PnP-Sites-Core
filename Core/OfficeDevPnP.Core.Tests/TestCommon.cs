@@ -92,6 +92,16 @@ namespace OfficeDevPnP.Core.Tests
             }
             else
             {
+                var onPremUseHighTrustCertificate = false;
+#if ONPREMISES
+                var onPremUseHighTrustCertificateValue = AppSetting("OnPremUseHighTrustCertificate");
+                if (!string.IsNullOrEmpty(onPremUseHighTrustCertificateValue))
+                {
+                    bool.TryParse(onPremUseHighTrustCertificateValue, out onPremUseHighTrustCertificate);
+                }
+#endif
+
+#if !ONPREMISES
                 if (!String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
                     !String.IsNullOrEmpty(AppSetting("SPOPassword")))
                 {
@@ -101,21 +111,29 @@ namespace OfficeDevPnP.Core.Tests
                     Password = EncryptionUtility.ToSecureString(password);
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
-                else if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
-                         !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
-                         !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
+                else 
+#endif
+                if (onPremUseHighTrustCertificate == false
+                    && !String.IsNullOrEmpty(AppSetting("OnPremUserName")) 
+                    && !String.IsNullOrEmpty(AppSetting("OnPremDomain"))
+                    && !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
                 {
                     Password = EncryptionUtility.ToSecureString(AppSetting("OnPremPassword"));
                     Credentials = new NetworkCredential(AppSetting("OnPremUserName"), Password, AppSetting("OnPremDomain"));
                 }
-                else if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
-                         !String.IsNullOrEmpty(AppSetting("AppSecret")))
+                else if (onPremUseHighTrustCertificate == false
+                    && !String.IsNullOrEmpty(AppSetting("AppId")) 
+                    && !String.IsNullOrEmpty(AppSetting("AppSecret")))
                 {
                     AppId = AppSetting("AppId");
                     AppSecret = AppSetting("AppSecret");
                 }
-                else if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
-                        !String.IsNullOrEmpty(AppSetting("HighTrustIssuerId")))
+                else if (onPremUseHighTrustCertificate == true
+                    || 
+                    (
+                        !String.IsNullOrEmpty(AppSetting("AppId")) 
+                        && !String.IsNullOrEmpty(AppSetting("HighTrustIssuerId")))
+                    )
                 {
                     AppId = AppSetting("AppId");
                     HighTrustCertificatePassword = AppSetting("HighTrustCertificatePassword");
@@ -361,7 +379,7 @@ namespace OfficeDevPnP.Core.Tests
             return context;
         }
 
-        #endregion
+#endregion
 
 
 #if !ONPREMISES

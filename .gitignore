@@ -181,3 +181,5 @@ FakesAssemblies/
 
 # VS Code Settings
 .vscode/
+/Core/OfficeDevPnP.Core.Tests/Framework/Functional/Templates/PnP_Resources.en-US.resx
+/Core/OfficeDevPnP.Core.Tests/Framework/Functional/Templates/PnP_Resources.nl-NL.resx

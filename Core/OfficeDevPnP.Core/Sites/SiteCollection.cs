@@ -88,18 +88,23 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("Lcid", siteCollectionCreationInformation.Lcid);
                     payload.Add("ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled);
                     payload.Add("Url", siteCollectionCreationInformation.Url);
+
                     // Deprecated
                     // payload.Add("AllowFileSharingForGuestUsers", siteCollectionCreationInformation.AllowFileSharingForGuestUsers);
+//#if !SP2019
                     if (siteDesignId != Guid.Empty)
                     {
                         payload.Add("SiteDesignId", siteDesignId);
                     }
+//#endif
                     payload.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     payload.Add("Description", siteCollectionCreationInformation.Description ?? "");
                     payload.Add("WebTemplate", "SITEPAGEPUBLISHING#0");
                     payload.Add("WebTemplateExtensionId", Guid.Empty);
+#if !SP2019
                     payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
                     payload.Add("Owner", siteCollectionCreationInformation.Owner);
+#endif
 
                     var body = new { request = payload };
 
@@ -366,6 +371,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
+
 #if !SP2019
         /// <summary>
         /// Groupifies a classic team site by creating a group for it and connecting the site with the newly created group
@@ -521,6 +527,8 @@ namespace OfficeDevPnP.Core.Sites
             return Guid.Empty;
         }
 
+
+#if !SP2019
         /// <summary>
         /// Checks if a given alias is already in use or not
         /// </summary>
@@ -755,6 +763,8 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseString);
             }
         }
+#endif
+
     }
 }
 #endif

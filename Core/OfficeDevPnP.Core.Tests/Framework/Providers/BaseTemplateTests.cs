@@ -166,7 +166,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
                             if (!siteExists)
                             {
-                                tenant.CreateSiteCollection(new Entities.SiteEntity()
+                                var newSiteEntity = new Entities.SiteEntity()
                                 {
                                     Lcid = 1033,
                                     TimeZoneId = 4,
@@ -180,7 +180,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                                     Title = "Template Site",
                                     Template = template.Template,
                                     Url = siteUrl,
-                                }, true, true); ;
+                                };
+#if !ONPREMISES
+
+                                tenant.CreateSiteCollection(newSiteEntity, true, true);
+#else
+                                tenant.CreateSiteCollection(newSiteEntity);
+#endif                 
                             }
 
                             if (template.SubSiteTemplate.Length > 0)
@@ -204,10 +210,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     }
                 }
 #endif
-                                }
+                            }
 
-            // Export the base templates
-            using (ClientContext ctx = TestCommon.CreateClientContext())
+                            // Export the base templates
+                            using (ClientContext ctx = TestCommon.CreateClientContext())
             {
                 foreach (var template in templates)
                 {

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-pub">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-pub" Version="0">
+      <pnp:Publishing AutoCheckRequirements="SkipIfNotCompliant">
+        <pnp:DesignPackage DesignPackagePath="mypackage" MajorVersion="2" MinorVersion="3" PackageGuid="306ab10d-981d-471d-a8f9-16e1260ad4eb" PackageName="MyTestPackage" />
+        <pnp:AvailableWebTemplates>
+          <pnp:WebTemplate LanguageCode="0" TemplateName="Template1033" />
+          <pnp:WebTemplate LanguageCode="1049" TemplateName="Template1049" />
+        </pnp:AvailableWebTemplates>
+        <pnp:PageLayouts Default="mypagelayout1.aspx">
+          <pnp:PageLayout Path="mypagelayout1.aspx" />
+          <pnp:PageLayout Path="mypagelayout2.aspx" />
+        </pnp:PageLayouts>
+      </pnp:Publishing>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

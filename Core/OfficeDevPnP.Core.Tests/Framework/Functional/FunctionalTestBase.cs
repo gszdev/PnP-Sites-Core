@@ -236,8 +236,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             tenant.CreateSiteCollection(siteToCreate);
 
-            // Create the default groups
-            using (ClientContext cc = new ClientContext(siteToCreateUrl))
+            // Create the default groups            
+            using (ClientContext cc = TestCommon.CreateClientContext(siteToCreateUrl))
             {
                 var owners = cc.Web.AddGroup("Test Owners", "", true, false);
                 var members = cc.Web.AddGroup("Test Members", "", true, false);
@@ -251,7 +251,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
         {
-            using (ClientContext cc = new ClientContext(sitecollectionUrl))
+            using (ClientContext cc = TestCommon.CreateClientContext(sitecollectionUrl))
             {
                 //Create sub site
                 SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };

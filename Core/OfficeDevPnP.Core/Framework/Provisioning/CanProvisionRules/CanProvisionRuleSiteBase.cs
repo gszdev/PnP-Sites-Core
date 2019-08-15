@@ -14,6 +14,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
     /// </summary>
     internal abstract class CanProvisionRuleSiteBase: ICanProvisionRuleSite
     {
+        //#if ONPREMISES
+        /// <summary>
+        /// The TenantAdminSiteUrl contains the tenant admin site url. 
+        /// <remarks>
+        /// This value is only relevant for onpremesis environments (SP2013, SP2016, SP2019)
+        /// </remarks>
+        /// </summary>
+        public string TenantAdminSiteUrl { get; set; }
+//#endif
+
         public string Name { get => this.GetType().FullName; }
 
         /// <summary>

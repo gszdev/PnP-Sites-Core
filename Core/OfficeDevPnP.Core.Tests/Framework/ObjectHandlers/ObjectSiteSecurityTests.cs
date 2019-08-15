@@ -299,7 +299,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.ExecuteQueryRetry();
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
+#if !ONPREMISES
                 Assert.IsFalse(template.Security.SiteGroups.Any());
+#else
+                Assert.AreEqual(template.Security.SiteGroups.Count, 1);
+#endif
 
                 // tbd: fix those...
                 //Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedOwnerGroup.Title, web), template.Security.AssociatedOwnerGroup, "Associated owner group title mismatch.");
@@ -373,21 +377,26 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public void CanProvisionAssociatedGroups()
         {
             ProvisioningTemplate template = new ProvisioningTemplate();
+
             template.Security.AssociatedOwnerGroup = ownerGroupName;
             template.Security.AssociatedMemberGroup = memberGroupName;
             template.Security.AssociatedVisitorGroup = visitorGroupName;
+            
             template.Security.SiteGroups.Add(new SiteGroup()
             {
                 Title = ownerGroupName
             });
+
             template.Security.SiteGroups.Add(new SiteGroup()
             {
                 Title = memberGroupName
             });
+
             template.Security.SiteGroups.Add(new SiteGroup()
             {
                 Title = visitorGroupName
             });
+
             foreach (var user in admins)
             {
                 template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName });
@@ -399,6 +408,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Web web = ctx.Web;
 
                 var parser = new TokenParser(ctx.Web, template);
+                if (parser.Tokens.Count == 0)
+                {
+                    parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+
+                    parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.members));
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
+
+                    parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.visitors));
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
+                }
+
                 new ObjectSiteSecurity().ProvisionObjects(web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 ctx.Load(web,
@@ -406,10 +427,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     w => w.AssociatedMemberGroup.Id,
                     w => w.AssociatedVisitorGroup.Id);
                 ctx.ExecuteQueryRetry();
-
+                                
                 Assert.AreEqual(ownerGroupId, web.AssociatedOwnerGroup.Id, "Associated owner group ID mismatch.");
                 Assert.AreEqual(memberGroupId, web.AssociatedMemberGroup.Id, "Associated member group ID mismatch.");
                 Assert.AreEqual(visitorGroupId, web.AssociatedVisitorGroup.Id, "Associated visitor group ID mismatch.");
+                
                 IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
 
                 AssociatedGroupToken associatedOwnerGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupToken.AssociatedGroupType.owners);
@@ -632,7 +654,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -698,7 +724,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -758,7 +788,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -818,7 +852,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -884,7 +922,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -950,7 +992,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 #endif
-        private void LoadAssociatedOwnerGroupsData(ClientContext ctx, bool loadAllGroupsTitles = false)
+                    private void LoadAssociatedOwnerGroupsData(ClientContext ctx, bool loadAllGroupsTitles = false)
         {
             if (!loadAllGroupsTitles)
             {

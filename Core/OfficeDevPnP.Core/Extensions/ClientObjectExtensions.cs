@@ -298,5 +298,6 @@ namespace Microsoft.SharePoint.Client
             var objectData = (ClientObjectData)info_ClientObject_ObjectData.GetValue(clientObject, new object[0]);
             objectData.MethodReturnObjects.Clear();
         }
+
     }
 }

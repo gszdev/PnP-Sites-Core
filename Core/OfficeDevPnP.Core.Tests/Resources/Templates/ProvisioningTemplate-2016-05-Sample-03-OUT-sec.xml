@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-sec">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-sec" Version="0">
+      <pnp:Security BreakRoleInheritance="true" CopyRoleAssignments="true" ClearSubscopes="true">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:SiteGroups>
+          <pnp:SiteGroup Title="TestGroup1" Description="Test Group 1" Owner="user1@contoso.com" AllowMembersEditMembership="true" AllowRequestToJoinLeave="true" AutoAcceptRequestToJoinLeave="true" OnlyAllowMembersViewMembership="true" RequestToJoinLeaveEmailSetting="group1@contoso.com">
+            <pnp:Members>
+              <pnp:User Name="user1@contoso.com" />
+              <pnp:User Name="user2@contoso.com" />
+            </pnp:Members>
+          </pnp:SiteGroup>
+          <pnp:SiteGroup Title="TestGroup2" Owner="user2@contoso.com" AllowMembersEditMembership="false" AllowRequestToJoinLeave="false" AutoAcceptRequestToJoinLeave="false" OnlyAllowMembersViewMembership="false" />
+        </pnp:SiteGroups>
+        <pnp:Permissions>
+          <pnp:RoleDefinitions>
+            <pnp:RoleDefinition Name="User" Description="User Role">
+              <pnp:Permissions>
+                <pnp:Permission>ViewListItems</pnp:Permission>
+                <pnp:Permission>AddListItems</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+            <pnp:RoleDefinition Name="EmptyRole" Description="Empty Role">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+          </pnp:RoleDefinitions>
+          <pnp:RoleAssignments>
+            <pnp:RoleAssignment Principal="admin@contoso.com" RoleDefinition="Owner" />
+            <pnp:RoleAssignment Principal="user@contoso.com" RoleDefinition="User" />
+          </pnp:RoleAssignments>
+        </pnp:Permissions>
+      </pnp:Security>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

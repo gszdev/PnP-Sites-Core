@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-web">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-web" Version="0">
+      <pnp:WebSettings RequestAccessEmail="admin@contoso.com" NoCrawl="true" WelcomePage="/Pages/home.aspx" Title="Contoso Portal" Description="Test site" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" CustomMasterPageUrl="custom.master" />
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

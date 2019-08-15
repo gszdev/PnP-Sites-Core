@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Localizations>
+    <pnp:Localization LCID="1033" Name="en-US" ResourceFile="template.en-US.resx" />
+    <pnp:Localization LCID="1040" Name="it-IT" ResourceFile="template.it-It.resx" />
+  </pnp:Localizations>
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-local">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-local" Version="0" />
+  </pnp:Templates>
+</pnp:Provisioning>

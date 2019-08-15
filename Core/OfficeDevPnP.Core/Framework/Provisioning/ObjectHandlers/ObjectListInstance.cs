@@ -872,10 +872,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
             // We cannot configure Hidden property for Phonetic fields
-            if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts
-                && (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
-                || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
-                || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            
+            //if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts
+            //    && (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+            //    || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+            //    || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            if(CanConfigureHiddenPropertyForField(siteList, fieldRef))
             {
                 if (fieldRef.Hidden != listField.Hidden)
                 {
@@ -893,10 +895,51 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (isDirty)
             {
                 listField.UpdateAndPushChanges(true);
-                siteList.Context.ExecuteQueryRetry();
+                try
+                {
+                    siteList.Context.ExecuteQueryRetry();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
             }
 
             return listField;
+        }
+
+        private static bool CanConfigureHiddenPropertyForField(List siteList, FieldRef fieldRef)
+        {
+            bool result = true;
+
+            if (
+                (
+                    // We cannot configure Hidden property for Phonetic fields
+                    siteList.BaseTemplate == (int)ListTemplateType.Contacts
+                    && (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+                    || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+                    || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))
+                )
+#if ONPREMISES
+                ||
+
+                (
+                    // We cannot configure Hidden property for folowing fields
+                    fieldRef.Name.Equals("_ComplianceFlags", StringComparison.InvariantCultureIgnoreCase)
+                    || fieldRef.Name.Equals("_ComplianceTag", StringComparison.InvariantCultureIgnoreCase)
+                    || fieldRef.Name.Equals("_ComplianceTagWrittenTime", StringComparison.InvariantCultureIgnoreCase)
+                    || fieldRef.Name.Equals("_ComplianceTagUserId", StringComparison.InvariantCultureIgnoreCase)
+                    || fieldRef.Name.Equals("_IsRecord", StringComparison.InvariantCultureIgnoreCase)
+                )
+#endif
+                )
+            {
+                result = false;
+            }
+
+            return result;
         }
 
         private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser, Web web)
@@ -1389,7 +1432,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-#if !SP2013 && !SP2016
+#if !SP20163 && !SP2016 && !SP2019
                 // Process list webhooks
                 if (templateList.Webhooks.Any())
                 {
@@ -1916,7 +1959,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-#if !SP2013 && !SP2016
+#if !SP20163 && !SP2016 && !SP2019
             // Process list webhooks
             if (templateList.Webhooks.Any())
             {
@@ -1933,7 +1976,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(createdList, parser);
         }
 
-#if !SP2013 && !SP2016
+#if !SP20163 && !SP2016 && !SP2019
 
         private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, TokenParser parser, bool isListUpdate = false)
         {
@@ -2234,7 +2277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
-#if !SP2013 && !SP2016
+#if !SP20163 && !SP2016 && !SP2019
                     list = ExtractWebhooks(siteList, list);
 #endif
 
@@ -2263,7 +2306,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-#if !SP2013 && !SP2016
+#if !SP20163 && !SP2016 && !SP2019
 
         private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
         {

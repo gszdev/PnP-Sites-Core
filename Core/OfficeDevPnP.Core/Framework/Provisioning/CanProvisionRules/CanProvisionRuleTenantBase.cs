@@ -39,13 +39,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
             var result = new CanProvisionResult();
 
             // Target the root site collection
+#if !ONPREMISES
             tenant.EnsureProperty(t => t.RootSiteUrl);
+            var tenantRootsiteUrl = tenant.RootSiteUrl;
+#else
+            var tenantRootsiteUrl = tenant.GetTenantRootSiteUrl();
+#endif
 
             // Connect to the root site collection
-            using (var context = tenant.Context.Clone(tenant.RootSiteUrl))
+            using (var context = tenant.Context.Clone(tenantRootsiteUrl))
             {
                 // Evaluate the corresponding Site rule
                 var innerRule = Activator.CreateInstance(typeof(CanProvisionRuleSite)) as CanProvisionRuleSiteBase;
+                innerRule.TenantAdminSiteUrl = tenant.Context.Url;
 
                 Model.ProvisioningTemplate dummyTemplate = null;
 

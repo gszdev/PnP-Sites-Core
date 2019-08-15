@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-region">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-region" Version="0">
+      <pnp:RegionalSettings AdjustHijriDays="2" AlternateCalendarType="Gregorian Arabic Calendar" CalendarType="Gregorian" Collation="1" FirstDayOfWeek="Sunday" FirstWeekOfYear="1" LocaleId="1040" ShowWeeks="true" Time24="true" TimeZone="2" WorkDayEndHour="6:00PM" WorkDays="5" WorkDayStartHour="9:00AM" />
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

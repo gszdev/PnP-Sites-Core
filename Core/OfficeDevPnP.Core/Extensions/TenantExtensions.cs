@@ -46,7 +46,7 @@ namespace Microsoft.SharePoint.Client
 
 
         #region Site collection creation
-#if !SP2013
+#if !ONPREMISES
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
         /// </summary>
@@ -80,7 +80,8 @@ namespace Microsoft.SharePoint.Client
 
             SpoOperation op = tenant.CreateSite(newsite);
             tenant.Context.Load(tenant);
-            tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
+            //tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
+            tenant.Context.Load(op, i => i.IsComplete);
             tenant.Context.ExecuteQueryRetry();
 
             // Get site guid and return. If we create the site asynchronously, return an empty guid as we cannot retrieve the site by URL yet.
@@ -164,6 +165,15 @@ namespace Microsoft.SharePoint.Client
         /// <param name="properties">Describes the site collection to be created</param>
         public static void CreateSiteCollection(this Tenant tenant, SiteEntity properties)
         {
+            /*if (removeFromRecycleBin)
+            {
+                if (tenant.CheckIfSiteExists(properties.Url, SITE_STATUS_RECYCLED))
+                {
+                    tenant.DeleteSiteCollectionFromRecycleBin(properties.Url);
+                }
+            }
+            */
+
             SiteCreationProperties newsite = new SiteCreationProperties();
             newsite.Url = properties.Url;
             newsite.Owner = properties.SiteOwnerLogin;
@@ -359,7 +369,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Site collection deletion
-
+#if !ONPREMISES
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -368,7 +378,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="useRecycleBin">Leave the deleted site collection in the site collection recycle bin</param>
         public static void DeleteSiteCollection(this Tenant tenant, string siteFullUrl, bool useRecycleBin = true)
         {
-            DeleteSiteCollection(tenant, siteFullUrl, useRecycleBin);
+            DeleteSiteCollection(tenant, siteFullUrl, useRecycleBin, null);
         }
 
         /// <summary>
@@ -448,7 +458,8 @@ namespace Microsoft.SharePoint.Client
             }
             return ret;
         }
-/*
+
+#else
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -459,7 +470,8 @@ namespace Microsoft.SharePoint.Client
             tenant.RemoveSite(siteFullUrl);
             tenant.Context.ExecuteQueryRetry();
         }
-*/
+        
+#endif
         #endregion
 
         #region Site collection properties
@@ -652,7 +664,7 @@ namespace Microsoft.SharePoint.Client
 
             }
         }
-        #endregion
+#endregion
 
 
         #region Site collection administrators
@@ -1094,6 +1106,86 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
+#elif SP2019
+        public static bool IsCurrentUserTenantAdmin(ClientContext clientContext, string tenantAdminSiteUrl)
+        {
+            bool result = false;
+
+            // Get the URL of the current site collection
+            var web = clientContext.Web;
+            var site = clientContext.Site;
+            site.EnsureProperty(s => s.Url);
+
+            var baseTempalteId = web.GetBaseTemplateId();
+            if (string.Equals(baseTempalteId, "TENANTADMIN#0", StringComparison.InvariantCultureIgnoreCase))
+            {
+                result = true;
+            }
+            else
+            {
+                // Otherwise, we need to target the Admin Site
+                // No easy way to detect tenant admin site in on-premises, so users have to specify it
+                string adminSiteUrl = tenantAdminSiteUrl;
+                if (!string.IsNullOrEmpty(adminSiteUrl))
+                {
+                    result = CanConnectTenantAdminSite(clientContext, adminSiteUrl);
+                }
+                else
+                {
+                    //TODO: try to find a way to get the real tenant admin site url
+                    Uri uri = new Uri(clientContext.Url.TrimEnd(new[] { '/' }));
+                    var rootSiteUrl = $"{uri.Scheme}://{uri.DnsSafeHost}";
+
+                    var urlsToTry = new System.Collections.Generic.List<string>()
+                    {
+                        rootSiteUrl + "/sites/admin",
+                        rootSiteUrl + "/sites/tenantadmin"
+                    };
+
+                    foreach (var url in urlsToTry)
+                    {
+                        result = CanConnectTenantAdminSite(clientContext, url);
+                        if (result)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                
+            }
+
+            return result;
+        }
+
+        private static bool CanConnectTenantAdminSite(ClientContext clientContext, string adminSiteUrl)
+        {
+            bool result = false;
+
+            try
+            {
+                // Connect to the Admin Site
+                using (var adminContext = clientContext.Clone(adminSiteUrl))
+                {
+                    // Do something with the Tenant Admin Context
+                    Tenant tenant = new Tenant(adminContext);
+                    tenant.EnsureProperty(t => t.RootSiteUrl);
+
+                    // If we've got access to the tenant admin context, 
+                    // it means that the currently connecte user is an admin
+                    result = true;
+                }
+            }
+            catch
+            {
+                // In case of any connection exception, the user is not an admin
+                result = false;
+            }
+
+            return result;
+        }
+#else
+
 #endif
 
         #endregion
@@ -1188,5 +1280,44 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
+
+
+#if !ONPREMISES
+        public static string GetTenantRootSiteUrl(this Tenant tenant)
+        {
+            string result = null;
+
+            tenant.EnsureProperty(t => t.RootSiteUrl);
+            result = tenant.RootSiteUrl;
+
+            /*
+            var rootUrl = tenant.GetRootSiteUrl();
+            tenant.Context.ExecuteQueryRetry();
+            result = rootUrl.Value;
+            */
+
+            return result;
+        }
+#else
+        public static string GetTenantRootSiteUrl(this Tenant tenant)
+        {
+            string result = null;
+
+            // Onpremises (SP2019) will always return string.Emtpy for tenant.RootSiteUrl
+            //tenant.EnsureProperty(t => t.RootSiteUrl);
+
+
+            // var tenantUri = new Uri(tenant.Context.Url);            
+            //var rootSiteUri = new Uri(tenantUri.Scheme + "://" + tenantUri.Host + "/");
+            //result = rootSiteUri.ToString();
+
+            Uri uri = new Uri(tenant.Context.Url.TrimEnd(new[] { '/' }));
+            result = $"{uri.Scheme}://{uri.DnsSafeHost}";
+
+            return result;
+        }
+
+        
+#endif
     }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.12.1908.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-pages">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-pages" Version="0">
+      <pnp:Pages>
+        <pnp:Page Url="home.aspx" Overwrite="true" Layout="ThreeColumnsHeaderFooter">
+          <pnp:WebParts>
+            <pnp:WebPart Title="My Content" Row="2" Column="1">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+            <pnp:WebPart Title="My Editor" Row="1" Column="2">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+          <pnp:Fields>
+            <pnp:Field FieldName="TestField">Value1</pnp:Field>
+            <pnp:Field FieldName="TestField2">Value2</pnp:Field>
+            <pnp:Field FieldName="TestField3">Value3</pnp:Field>
+            <pnp:Field FieldName="TestField4">Value4</pnp:Field>
+          </pnp:Fields>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="owner" />
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="contributor" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Page>
+        <pnp:Page Url="help.aspx" Layout="OneColumn" />
+      </pnp:Pages>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

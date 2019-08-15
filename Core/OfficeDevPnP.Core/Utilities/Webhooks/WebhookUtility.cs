@@ -1,4 +1,4 @@
-﻿#if !SP2013 && !SP2016
+﻿#if !SP20163 && !SP2016 && !SP2019
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Entities;

@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 
             // Prepare the default output
             var result = new CanProvisionResult();
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 
             Model.ProvisioningTemplate targetTemplate = null;
 

@@ -1,4 +1,4 @@
-﻿#if !SP20163 && !SP2016
+﻿#if !SP20163 && !SP2016 && !SP2019
 using Newtonsoft.Json;
 using System;
 

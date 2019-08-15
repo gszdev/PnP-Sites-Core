@@ -39,7 +39,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             string tSchemaXml = ExtractElementXml(ptTarget);
 
             // Use XML validation logic to compare source and target
-            if (!ValidateObjectXML(sSchemaXml, tSchemaXml, null)) { return false; }
+            if (!ValidateObjectXML(sSchemaXml, tSchemaXml, null))
+            {
+                return false;
+            }
 
             return true;
         }
