@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Test preparation
         public static void ClassInitBase(TestContext context, bool noScriptSite = false)
-        {            
+        {
             // Drop all previously created site collections to keep the environment clean
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
@@ -75,6 +75,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [TestInitialize()]
         public virtual void Initialize()
         {
+            TestCommon.FixAssemblyResolving("Newtonsoft.Json");
+
             sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
 

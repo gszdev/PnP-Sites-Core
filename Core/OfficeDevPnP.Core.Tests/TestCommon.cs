@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Tests
             // Read configuration data
             TenantUrl = AppSetting("SPOTenantUrl");
             DevSiteUrl = AppSetting("SPODevSiteUrl");
+            DefaultSiteOwner = AppSetting("DefaultSiteOwner");
 
 #if !SP2013 && !SP2016
             if (string.IsNullOrEmpty(TenantUrl))
@@ -92,24 +93,30 @@ namespace OfficeDevPnP.Core.Tests
             }
             else
             {
-                var onPremUseHighTrustCertificate = false;
 #if ONPREMISES
                 var onPremUseHighTrustCertificateValue = AppSetting("OnPremUseHighTrustCertificate");
                 if (!string.IsNullOrEmpty(onPremUseHighTrustCertificateValue))
                 {
-                    bool.TryParse(onPremUseHighTrustCertificateValue, out onPremUseHighTrustCertificate);
+                    bool tempOnPremUseHighTrustCertificate = false;
+                    if (bool.TryParse(onPremUseHighTrustCertificateValue, out tempOnPremUseHighTrustCertificate))
+                    {
+                        OnPremUseHighTrustCertificate = tempOnPremUseHighTrustCertificate;
+                    }
                 }
-#endif
-
-                var spoUseAppOnly = false;
+#endif          
 
                 var spoUseAppOnlyValue = AppSetting("SPOUseAppOnly");
                 if (!string.IsNullOrEmpty(spoUseAppOnlyValue))
                 {
-                    bool.TryParse(spoUseAppOnlyValue, out spoUseAppOnly);
+                    var tempSPOUseAppOnly = false;
+                    if (bool.TryParse(spoUseAppOnlyValue, out tempSPOUseAppOnly))
+                    {
+                        SPOUseAppOnly = tempSPOUseAppOnly;
+                    }
                 }
+
 #if !ONPREMISES
-                if (spoUseAppOnly == false
+                if (SPOUseAppOnly == false
                     && !String.IsNullOrEmpty(AppSetting("SPOUserName")) 
                     && !String.IsNullOrEmpty(AppSetting("SPOPassword")))
                 {
@@ -121,7 +128,7 @@ namespace OfficeDevPnP.Core.Tests
                 }
                 else 
 #endif
-                if (onPremUseHighTrustCertificate == false
+                if (OnPremUseHighTrustCertificate == false
                     && !String.IsNullOrEmpty(AppSetting("OnPremUserName")) 
                     && !String.IsNullOrEmpty(AppSetting("OnPremDomain"))
                     && !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
@@ -129,14 +136,16 @@ namespace OfficeDevPnP.Core.Tests
                     Password = EncryptionUtility.ToSecureString(AppSetting("OnPremPassword"));
                     Credentials = new NetworkCredential(AppSetting("OnPremUserName"), Password, AppSetting("OnPremDomain"));
                 }
-                else if (onPremUseHighTrustCertificate == false
+                else if (OnPremUseHighTrustCertificate == false
                     && !String.IsNullOrEmpty(AppSetting("AppId")) 
                     && !String.IsNullOrEmpty(AppSetting("AppSecret")))
                 {
                     AppId = AppSetting("AppId");
                     AppSecret = AppSetting("AppSecret");
+
+                    IsAppOnlyTesting = true;
                 }
-                else if (onPremUseHighTrustCertificate == true
+                else if (OnPremUseHighTrustCertificate == true
                     || 
                     (
                         //!String.IsNullOrEmpty(AppSetting("AppId")) 
@@ -145,10 +154,13 @@ namespace OfficeDevPnP.Core.Tests
                     )
                 {
                     //AppId = AppSetting("AppId");
+                    //AppId = AppSetting("HighTrustClientId");
+
                     HighTrustClientId = AppSetting("HighTrustClientId");
                     HighTrustCertificatePassword = AppSetting("HighTrustCertificatePassword");
                     HighTrustCertificatePath = AppSetting("HighTrustCertificatePath");
                     HighTrustIssuerId = AppSetting("HighTrustIssuerId");
+                    HighTrustBehalfOfUserLoginName = AppSetting("HighTrustBehalfOfUserLoginName");                                        
 
                     if (!String.IsNullOrEmpty(AppSetting("HighTrustCertificateStoreName")))
                     {
@@ -167,6 +179,11 @@ namespace OfficeDevPnP.Core.Tests
                         }
                     }
                     HighTrustCertificateStoreThumbprint = AppSetting("HighTrustCertificateStoreThumbprint").Replace(" ", string.Empty);
+
+                    if (string.IsNullOrEmpty(HighTrustBehalfOfUserLoginName))
+                    {
+                        IsAppOnlyTesting = true;
+                    }
                 }
                 else
                 {
@@ -184,6 +201,14 @@ namespace OfficeDevPnP.Core.Tests
         public static ICredentials Credentials { get; set; }
         public static string AppId { get; set; }
         static string AppSecret { get; set; }
+
+
+        public static string DefaultSiteOwner { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static bool IsAppOnlyTesting { get; private set; }
 
         /// <summary>
         /// The ClientID is the web application's client ID (GUID) that was generated on appregnew.aspx / same value as the HighTrustIssuerId
@@ -225,6 +250,15 @@ namespace OfficeDevPnP.Core.Tests
         /// </summary>
         public static string HighTrustCertificateStoreThumbprint { get; set; }
 
+
+        public static bool OnPremUseHighTrustCertificate { get; set; }
+
+        public static string HighTrustBehalfOfUserLoginName { get; set; }
+
+        
+
+        public static bool SPOUseAppOnly { get; set; }
+
         public static string TestWebhookUrl
         {
             get
@@ -259,6 +293,14 @@ namespace OfficeDevPnP.Core.Tests
             get
             {
                 return AppSetting("AzureADClientId");
+            }
+        }
+
+        public static String AzureADCertificatePath
+        {
+            get
+            {
+                return AppSetting("AzureADCertificatePath");
             }
         }
         public static String NoScriptSite
@@ -329,11 +371,16 @@ namespace OfficeDevPnP.Core.Tests
 
         public static bool AppOnlyTesting()
         {
+            /*
             if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
                 !String.IsNullOrEmpty(AppSetting("AppSecret")) &&
+
+
+
                 String.IsNullOrEmpty(AppSetting("SPOCredentialManagerLabel")) &&
                 String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
                 String.IsNullOrEmpty(AppSetting("SPOPassword")) &&
+
                 String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                 String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                 String.IsNullOrEmpty(AppSetting("OnPremPassword")))
@@ -344,6 +391,8 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return false;
             }
+            */
+            return IsAppOnlyTesting;
         }
 
 #if !NETSTANDARD2_0
@@ -374,7 +423,8 @@ namespace OfficeDevPnP.Core.Tests
         private static ClientContext CreateContext(string contextUrl, ICredentials credentials)
         {
             ClientContext context =  null;
-            if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
+            if (!String.IsNullOrEmpty(AppId) 
+                && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
 
@@ -389,6 +439,72 @@ namespace OfficeDevPnP.Core.Tests
                     context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret);
                 }
             }
+#if ONPREMISES
+            else if (OnPremUseHighTrustCertificate
+                && (
+                    ! string.IsNullOrEmpty(HighTrustClientId) 
+                    && !string.IsNullOrEmpty(HighTrustCertificatePath)
+                    && !string.IsNullOrEmpty(HighTrustCertificatePassword)
+                    && !string.IsNullOrEmpty(HighTrustIssuerId)
+                ))
+            {
+                // Instantiate a ClientContext object based on the defined high trust certificate
+                if (!string.IsNullOrEmpty(HighTrustBehalfOfUserLoginName))
+                {
+                    context = new AuthenticationManager().GetHighTrustCertificateAppAuthenticatedContext(
+                        contextUrl,
+                        HighTrustClientId,
+                        HighTrustCertificatePath,
+                        HighTrustCertificatePassword,
+                        HighTrustIssuerId,
+                        HighTrustBehalfOfUserLoginName);                        
+                }
+                else
+                {
+                    context = new AuthenticationManager().GetHighTrustCertificateAppOnlyAuthenticatedContext(
+                        contextUrl,
+                        HighTrustClientId,
+                        HighTrustCertificatePath,
+                        HighTrustCertificatePassword,
+                        HighTrustIssuerId);
+                }                
+            }
+            else if (OnPremUseHighTrustCertificate
+                && 
+                (
+                    string.IsNullOrEmpty(HighTrustClientId)
+                    && !!HighTrustCertificateStoreName.HasValue
+                    && !!HighTrustCertificateStoreLocation.HasValue
+                    && !string.IsNullOrEmpty(HighTrustCertificateStoreThumbprint)
+                    && !string.IsNullOrEmpty(HighTrustIssuerId)
+                    )
+                )
+            {
+                // Instantiate a ClientContext object based on the defined high trust certificate
+                if (!string.IsNullOrEmpty(HighTrustBehalfOfUserLoginName))
+                {
+                    context = new AuthenticationManager().GetHighTrustCertificateAppAuthenticatedContext(
+                        contextUrl,
+                        HighTrustClientId,
+                        HighTrustCertificateStoreName.Value,
+                        HighTrustCertificateStoreLocation.Value,
+                        HighTrustCertificateStoreThumbprint,
+                        HighTrustIssuerId,
+                        HighTrustBehalfOfUserLoginName);
+                }
+                else
+                {
+                    context = new AuthenticationManager().GetHighTrustCertificateAppOnlyAuthenticatedContext(
+                        contextUrl,
+                        HighTrustClientId,
+                        HighTrustCertificateStoreName.Value,
+                        HighTrustCertificateStoreLocation.Value,
+                        HighTrustCertificateStoreThumbprint,
+                        HighTrustIssuerId);
+                }
+            }
+#endif
+
             else
             {
                 context = new ClientContext(contextUrl);
@@ -399,7 +515,7 @@ namespace OfficeDevPnP.Core.Tests
             return context;
         }
 
-#endregion
+        #endregion
 
 
 #if !ONPREMISES
@@ -430,6 +546,8 @@ namespace OfficeDevPnP.Core.Tests
             return json["access_token"].ToString();
         }
 
+        
+#endif
         private static Assembly _newtonsoftAssembly;
         private static string _assemblyName;
 
@@ -456,7 +574,7 @@ namespace OfficeDevPnP.Core.Tests
         {
             return args.Name.StartsWith(_assemblyName) ? _newtonsoftAssembly : AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.FullName == args.Name);
         }
-#endif
+
         public static void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)
         {
             var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeFileUrl);

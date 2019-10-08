@@ -513,13 +513,21 @@ namespace Microsoft.SharePoint.Client
             if (!String.IsNullOrEmpty(accessToken))
             {
                 // Try to decode the access token
-                var token = new JwtSecurityToken(accessToken);
-
-                // Search for the UPN claim, to see if we have user's delegation
-                var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
-                if (String.IsNullOrEmpty(upn))
+                try
                 {
-                    result = true;
+                    var token = new JwtSecurityToken(accessToken);
+
+                    // Search for the UPN claim, to see if we have user's delegation
+                    var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
+                    if (String.IsNullOrEmpty(upn))
+                    {
+                        result = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Maybe Newtonsoft.Json assembly is not loaded?
+                    throw;
                 }
             }
             else if (clientContext.Credentials == null)
@@ -763,7 +771,23 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        throw new Exception(await response.Content.ReadAsStringAsync());
+                        var errorSb = new System.Text.StringBuilder();
+                        errorSb.AppendLine(await response.Content.ReadAsStringAsync());
+
+                        //var System.Net.Http.HttpResponseMessage
+                        //if(response.Headers["SPRequestGuid"] != null)
+                        //if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase)))
+                        if (response.Headers.Contains("SPRequestGuid"))
+                        {
+                            var values = response.Headers.GetValues("SPRequestGuid");
+                            if(values != null)
+                            {
+                                var spRequestGuid = values.FirstOrDefault();
+                                errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                            }                            
+                        }
+
+                        throw new Exception(errorSb.ToString());
                     }
                 }
                 var contextInformation = JsonConvert.DeserializeObject<dynamic>(responseString);
@@ -809,7 +833,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#if !SP2019
+#if !SP2013 && !SP2016 && !SP2019
         /// <summary>
         /// BETA: Groupifies a classic Team Site Collection
         /// </summary>

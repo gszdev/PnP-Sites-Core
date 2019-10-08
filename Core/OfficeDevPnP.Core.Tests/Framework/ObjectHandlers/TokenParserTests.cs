@@ -38,8 +38,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var roleDefinition = ctx.Web.RoleDefinitions.GetById(expectedRoleDefinitionId);
                 ctx.Load(roleDefinition);
 
-                ctx.Web.CreateDefaultAssociatedGroups(string.Empty, string.Empty, string.Empty);
-
+                //#if !SP2013 && !SP2016
+#if SP2019
+                if (TestCommon.AppOnlyTesting())
+                {
+                    ctx.Web.CreateDefaultAssociatedGroups(TestCommon.DefaultSiteOwner, TestCommon.DefaultSiteOwner, string.Empty);
+                }
+                else
+                {
+                    ctx.Web.CreateDefaultAssociatedGroups(string.Empty, string.Empty, string.Empty);
+                }
+#endif
                 ctx.ExecuteQueryRetry();
 
                 //ctx.Web.EnsureProperty(x => x.AssociatedOwnerGroup);

@@ -181,7 +181,28 @@ namespace Microsoft.SharePoint.Client.Tests
                     foreach (var termSet in termSets)
                     {
                         termSet.DeleteObject();
+                        clientContext.ExecuteQueryRetry();
                     }
+                    termStore.CommitAll(); 
+                    clientContext.ExecuteQueryRetry();
+
+                    /*
+                    // Ensure that the group is empty before deleting it.
+                    clientContext.Load(termSets);
+                    clientContext.ExecuteQueryRetry();
+
+                    if (termSets.Count > 0)
+                    {
+                        // Ensure that the group is empty before deleting it.
+                        foreach (var termSet in termSets)
+                        {
+                            termSet.DeleteObject();
+                        }
+                        termStore.CommitAll();
+                        clientContext.ExecuteQueryRetry(); 
+                    }
+                    */
+
                     termGroup.DeleteObject(); // Will delete underlying termset
                     clientContext.ExecuteQueryRetry();
                 }

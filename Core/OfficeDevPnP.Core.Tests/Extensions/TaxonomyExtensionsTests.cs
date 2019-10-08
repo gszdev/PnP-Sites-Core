@@ -129,23 +129,23 @@ namespace Microsoft.SharePoint.Client.Tests
         {
             if (!TestCommon.AppOnlyTesting())
             {
-                Console.WriteLine("TaxonomyExtensionsTests.Cleanup");
+                try
+                {
+                    this.CleanupTaxonomy();
+                }
+                catch (ServerException serverEx)
+                {
+                    if (!string.IsNullOrEmpty(serverEx.ServerErrorTypeName)
+                        && serverEx.ServerErrorTypeName.Contains("TermStoreErrorCodeEx"))
+                    {
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
+                        this.CleanupTaxonomy();
+                    }
+                }
+
+
                 using (var clientContext = TestCommon.CreateClientContext())
                 {
-                    // Clean up Taxonomy
-                    var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
-                    var termStore = taxSession.GetDefaultSiteCollectionTermStore();
-                    var termGroup = termStore.GetGroup(_termGroupId);
-                    var termSets = termGroup.TermSets;
-                    clientContext.Load(termSets);
-                    clientContext.ExecuteQueryRetry();
-                    foreach (var termSet in termSets)
-                    {
-                        termSet.DeleteObject();
-                    }
-                    termGroup.DeleteObject(); // Will delete underlying termset
-                    clientContext.ExecuteQueryRetry();
-
                     // Clean up fields
                     var fields = clientContext.LoadQuery(clientContext.Web.Fields);
                     clientContext.ExecuteQueryRetry();
@@ -161,6 +161,33 @@ namespace Microsoft.SharePoint.Client.Tests
                     list.DeleteObject();
                     clientContext.ExecuteQueryRetry();
                 }
+            }
+        }
+
+        private void CleanupTaxonomy()
+        {
+            Console.WriteLine("TaxonomyExtensionsTests.Cleanup");
+
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // Clean up Taxonomy
+                var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
+                var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+                var termGroup = termStore.GetGroup(_termGroupId);
+                var termSets = termGroup.TermSets;
+                clientContext.Load(termSets);
+                clientContext.ExecuteQueryRetry();
+                foreach (var termSet in termSets)
+                {
+                    termSet.DeleteObject();
+                    clientContext.ExecuteQueryRetry();
+                }
+
+                termStore.CommitAll();
+                clientContext.ExecuteQueryRetry();
+
+                termGroup.DeleteObject(); // Will delete underlying termset
+                clientContext.ExecuteQueryRetry();
             }
         }
         #endregion

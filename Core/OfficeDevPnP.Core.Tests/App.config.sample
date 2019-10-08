@@ -80,6 +80,8 @@
     <add key="HighTrustCertificateStoreLocation" value="CurrentUser" />
     <!-- The thumbprint / hash of the High Trust certificate in the Windows certificate store -->
     <add key="HighTrustCertificateStoreThumbprint" value="bef80ea8c46391873e00a0ea588bd8feadd01d22" />
+    <!-- The SID or User Principal Name (UPN) for the user to work on behalf of-->
+    <add key="HighTrustBehalfOfUserLoginName" value="" />
 
 
     <!--Testing for Webhook test endpoint-->

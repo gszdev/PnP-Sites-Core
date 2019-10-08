@@ -43,6 +43,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestInitialize]
         public void Initialize()
         {
+            TestCommon.FixAssemblyResolving("Newtonsoft.Json");
 
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -939,13 +940,22 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             var newCommSiteUrl = $"{baseUrl}/sites/site{communicationSiteGuid}";
 
             // create new site to apply template to
-            var commResults = await clientContext.CreateSiteAsync(new Core.Sites.CommunicationSiteCollectionCreationInformation()
+            var siteCollectionCreationInformation = new Core.Sites.CommunicationSiteCollectionCreationInformation()
             {
                 Url = $"{baseUrl}/sites/site{communicationSiteGuid}",
                 SiteDesign = Core.Sites.CommunicationSiteDesign.Blank,
                 Title = newSiteTitle,
                 Lcid = 1033
-            });
+            };
+
+            if (clientContext.IsAppOnly() 
+                && string.IsNullOrEmpty(siteCollectionCreationInformation.Owner)
+                && !string.IsNullOrEmpty(TestCommon.DefaultSiteOwner))
+            {
+                siteCollectionCreationInformation.Owner = TestCommon.DefaultSiteOwner;
+            }
+
+            var commResults = await clientContext.CreateSiteAsync(siteCollectionCreationInformation);
             Assert.IsNotNull(commResults);
 
             if (allowScripts)
@@ -992,7 +1002,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 #endif
-                    private void LoadAssociatedOwnerGroupsData(ClientContext ctx, bool loadAllGroupsTitles = false)
+                private void LoadAssociatedOwnerGroupsData(ClientContext ctx, bool loadAllGroupsTitles = false)
         {
             if (!loadAllGroupsTitles)
             {

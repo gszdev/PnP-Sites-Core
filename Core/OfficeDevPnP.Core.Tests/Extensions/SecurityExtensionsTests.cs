@@ -108,11 +108,11 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 // Count admins
                 int initialCount = clientContext.Web.GetAdministrators().Count;
-                #if !ONPREMISES
+#if !ONPREMISES
                 var userEntity = new UserEntity {LoginName = _userLogin, Email = _userLogin};
-                #else
+#else
                 var userEntity = new UserEntity { LoginName = _userLogin };
-                #endif
+#endif
                 clientContext.Web.AddAdministrators(new List<UserEntity> {userEntity}, false);
 
                 List<UserEntity> admins = clientContext.Web.GetAdministrators();
@@ -122,11 +122,16 @@ namespace Microsoft.SharePoint.Client.Tests
                     string adminLoginName = admin.LoginName;
                     String[] parts = adminLoginName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (parts.Length > 1)
+                    if (parts.Length >= 3)
                     {
                         adminLoginName = parts[2];
                     }
-                    
+                    else if (parts.Length >= 2)
+                    {
+                        adminLoginName = parts[1];
+                    }
+
+
                     if (adminLoginName.Equals(_userLogin, StringComparison.InvariantCultureIgnoreCase))
                     {
                         found = true;

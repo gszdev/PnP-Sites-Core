@@ -80,8 +80,7 @@ namespace Microsoft.SharePoint.Client
 
             SpoOperation op = tenant.CreateSite(newsite);
             tenant.Context.Load(tenant);
-            //tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
-            tenant.Context.Load(op, i => i.IsComplete);
+            tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
             tenant.Context.ExecuteQueryRetry();
 
             // Get site guid and return. If we create the site asynchronously, return an empty guid as we cannot retrieve the site by URL yet.
