@@ -488,7 +488,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-                                        #region Helper methods
+        #region Helper methods
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
@@ -744,7 +744,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                                        #endregion
+        #endregion
+
     }
 #endif
-                                    }
+}

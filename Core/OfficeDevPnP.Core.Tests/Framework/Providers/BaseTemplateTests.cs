@@ -66,16 +66,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             templates.Add(new BaseTemplate("BDR#0"));
             templates.Add(new BaseTemplate("DEV#0"));
             templates.Add(new BaseTemplate("OFFILE#1"));
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             templates.Add(new BaseTemplate("GROUP#0", skipDeleteCreateCycle: true));
             templates.Add(new BaseTemplate("SITEPAGEPUBLISHING#0", skipDeleteCreateCycle: true));
+#endif
+#if !ONPREMISES
             templates.Add(new BaseTemplate("EHS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNETCONTAINER#0", "", "BLANKINTERNET#0"));
 #else
             templates.Add(new BaseTemplate("STS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNET#0"));
 #endif
-#if !ONPREMISES || SP2019
+#if !SP2013 && !SP2016
             templates.Add(new BaseTemplate("STS#3"));
 #endif
             templates.Add(new BaseTemplate("BICENTERSITE#0"));
@@ -113,7 +115,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 tenantCtx.RequestTimeout = 1000 * 60 * 15;
                 Tenant tenant = new Tenant(tenantCtx);
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (deleteSites)
                 {
                     // First delete all template site collections when in SPO
@@ -130,7 +132,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                             }
                             else
                             {
+#if !ONPREMISES
                                 tenant.DeleteSiteCollection(siteUrl, false);
+#else
+                                tenant.DeleteSiteCollection(siteUrl);
+#endif
                             }
                         }
                         catch{ }
@@ -160,15 +166,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
                             if (!siteExists)
                             {
-                                tenant.CreateSiteCollection(new Entities.SiteEntity()
+                                var newSiteEntity = new Entities.SiteEntity()
                                 {
                                     Lcid = 1033,
                                     TimeZoneId = 4,
+#if !ONPREMISES
                                     SiteOwnerLogin = (TestCommon.Credentials as SharePointOnlineCredentials).UserName,
+#else
+                                    SiteOwnerLogin = string.Format("{0}\\{1}",
+                                        (TestCommon.Credentials as System.Net.NetworkCredential).Domain,
+                                        (TestCommon.Credentials as System.Net.NetworkCredential).UserName),
+#endif
                                     Title = "Template Site",
                                     Template = template.Template,
                                     Url = siteUrl,
-                                }, true, true);
+                                };
+
+#if !ONPREMISES
+                                tenant.CreateSiteCollection(newSiteEntity, true, true);
+#else
+                                tenant.CreateSiteCollection(newSiteEntity);
+#endif
                             }
 
                             if (template.SubSiteTemplate.Length > 0)
@@ -192,7 +210,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     }
                 }
 #endif
-            }
+                            }
 
             // Export the base templates
             using (ClientContext ctx = TestCommon.CreateClientContext())

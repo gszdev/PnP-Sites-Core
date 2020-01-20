@@ -2561,21 +2561,21 @@ namespace OfficeDevPnP.Core {
         /// * @see {@link http://usejsdoc.org/|JSDoc}
         /// */
         ///
-        ////*
+        /// /*
         /// * PnPResponsiveApp
         /// * @namespace
         /// */
-        ///if (window.hasOwnProperty(&apos;Type&apos;)) {
+        /// if (window.hasOwnProperty(&apos;Type&apos;)) {
         ///    Type.registerNamespace(&apos;PnPResponsiveApp&apos;);
-        ///} else {
+        /// } else {
         ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
-        ///}
+        /// }
         ///
-        ////**
+        /// /**
         /// * PnP Responsive
         /// * @class
         /// */
-        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
+        /// PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2583,12 +2583,12 @@ namespace OfficeDevPnP.Core {
             }
         }
         
-        /// <summary>
+        ///<summary>
         ///   Looks up a localized string similar to .mobile-only {
         ///    display: none;
-        ///}
+        /// }
         ///
-        ///#sideNavBox, #contentRow, #siteIcon {
+        /// #sideNavBox, #contentRow, #siteIcon {
         ///    -webkit-transition: all 400ms ease;
         ///    -moz-transition: all 400ms ease;
         ///    -ms-transition: all 400ms ease;
@@ -2600,7 +2600,7 @@ namespace OfficeDevPnP.Core {
         ///    min-width: auto;
         ///}
         ///
-        ////* Make sure dialog windows don&apos;t break */
+        /// /* Make sure dialog windows don&apos;t break */
         ///.ms-dialog #contentRow {
         ///    margin-left: 0;
         ///}
@@ -2609,10 +2609,10 @@ namespace OfficeDevPnP.Core {
         ///    margin-top: 0;
         ///}
         ///
-        ///.ms-dialog #s4-bodyContainer {
+        /// .ms-dialog #s4-bodyContainer {
         ///    min-width: 0;
         ///   [rest of string was truncated]&quot;;.
-        /// </summary>
+        ///</summary>
         internal static string SP_Responsive_UI_CSS {
             get {
                 return ResourceManager.GetString("SP_Responsive_UI_CSS", resourceCulture);

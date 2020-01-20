@@ -92,9 +92,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return new XMLPnPSchemaV201605Formatter();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05:
                     return new XMLPnPSchemaV201705Serializer();
-#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_01:
                     return new XMLPnPSchemaV201801Serializer();
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_05:
                     return new XMLPnPSchemaV201805Serializer();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_07:

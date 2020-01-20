@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities
         private string _accessToken;
         private string _groupId;
 
-    #region Init and Cleanup code
+        #region Init and Cleanup code
 
         [TestInitialize]
         public void Initialize()
@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities
                 // Group has already been permanently deleted
             }
         }
-    #endregion
+        #endregion
 
         [TestMethod]
         public void ListDeletedUnifiedGroups()

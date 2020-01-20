@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         public StorageEntityValueToken(Web web, string key, string value)
             : base(web, $"{{storageentityvalue:{Regex.Escape(key)}}}")
         {
+            _key = key;
             _value = value;
         }
 

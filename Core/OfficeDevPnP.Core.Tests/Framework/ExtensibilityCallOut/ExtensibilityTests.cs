@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
     {
         private const string TEST_CATEGORY = "Framework Provisioning Extensibility Providers";
 
-#region Providers
+        #region Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -30,6 +30,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 
             var _em = new ExtensibilityManager();
             _em.ExecuteExtensibilityCallOut(_mockctx, _mockProvider, _mockTemplate);
+            // _em.ExecuteExtensibilityProvisionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null, null);
         }
 
 
@@ -212,11 +213,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
             var _em = new ExtensibilityManager();
             _em.ExecuteExtensibilityCallOut(_mockCtx, _mockProvider, _mockTemplate);
         }
+        #endregion
 
-#endregion
-
-#region TokenProviders
-
+        #region TokenProviders
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void TokenProviderReceivesExpectedParameters()
@@ -386,8 +385,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
             var _em = new ExtensibilityManager();
             _em.ExecuteTokenProviderCallOut(_mockCtx, _mockProvider, _mockTemplate);
         }
-
-#endregion
+        #endregion
     }
 }
 #endif

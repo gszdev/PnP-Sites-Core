@@ -217,8 +217,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             if (isDirty)
             {
-                existingContentType.Update(true);
-                web.Context.ExecuteQueryRetry();
+                try
+                {
+                    //ToDo: avoid exceptions like: Microsoft.SharePoint.SPContentTypeReadOnlyException
+                    // Microsoft.SharePoint.Client.ServerException: The content type "CT_?" at "/sites/TestPnPSC_12345_" is read only.
+                    //existingContentType.Update(true);
+                    //web.Context.ExecuteQueryRetry();
+
+                    existingContentType.SafeUpdate(true);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
 
             // Set flag to reorder fields CT fields are not equal to template fields
@@ -314,8 +325,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (isDirty)
             {
-                existingContentType.Update(true);
-                web.Context.ExecuteQueryRetry();
+                try
+                {
+                    //ToDo: avoid exceptions like: Microsoft.SharePoint.SPContentTypeReadOnlyException
+                    // Microsoft.SharePoint.Client.ServerException: The content type "CT_?" at "/sites/TestPnPSC_12345_" is read only.
+
+                    //existingContentType.Update(true);
+                    //web.Context.ExecuteQueryRetry();
+
+                    existingContentType.SafeUpdate(true);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
         }
 
@@ -370,7 +393,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             // Set resources
             if (templateContentType.Name.ContainsResourceToken())
             {

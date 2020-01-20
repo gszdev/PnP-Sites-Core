@@ -1166,9 +1166,6 @@ namespace OfficeDevPnP.Core.Pages
             switch (name.ToLower())
             {
                 case "daf0b71c-6de8-4ef7-b511-faae7c388708": return DefaultClientSideWebParts.ContentRollup;
-#if !ONPREMISES
-                case "e377ea37-9047-43b9-8cdb-a761be2f8e09": return DefaultClientSideWebParts.BingMap;
-#endif
                 case "490d7c76-1824-45b2-9de3-676421c997fa": return DefaultClientSideWebParts.ContentEmbed;
                 case "b7dd04e1-19ce-4b24-9132-b60a1c2b910d": return DefaultClientSideWebParts.DocumentEmbed;
                 case "d1d91016-032f-456d-98a4-721247c305e8": return DefaultClientSideWebParts.Image;
@@ -1176,20 +1173,11 @@ namespace OfficeDevPnP.Core.Pages
                 case "6410b3b6-d440-4663-8744-378976dc041e": return DefaultClientSideWebParts.LinkPreview;
                 case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
                 case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
-#if !ONPREMISES
-                // Seems like we've been having 2 guids to identify this web part...
-                // Now that _api/web/GetClientSideWebParts returns both guids / controls we can distinguish News v NewsReel
-                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.News;
-                case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
-#endif
                 case "91a50c94-865f-4f5c-8b4e-e49659e69772": return DefaultClientSideWebParts.QuickChart;
                 case "eb95c819-ab8f-4689-bd03-0c2d65d47b1f": return DefaultClientSideWebParts.SiteActivity;
                 case "275c0095-a77e-4f6d-a2a0-6a7626911518": return DefaultClientSideWebParts.VideoEmbed;
                 case "31e9537e-f9dc-40a4-8834-0e3b7df418bc": return DefaultClientSideWebParts.YammerEmbed;
                 case "20745d7d-8581-4a6c-bf26-68279bc123fc": return DefaultClientSideWebParts.Events;
-#if !ONPREMISES
-                case "6676088b-e28e-4a90-b9cb-d0d0303cd2eb": return DefaultClientSideWebParts.GroupCalendar;
-#endif
                 case "c4bd7b2f-7b6e-4599-8485-16504575f590": return DefaultClientSideWebParts.Hero;
                 case "f92bf067-bc19-489e-a556-7fe95f508720": return DefaultClientSideWebParts.List;
                 case "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788": return DefaultClientSideWebParts.PageTitle;
@@ -1198,10 +1186,17 @@ namespace OfficeDevPnP.Core.Pages
                 case "71c19a43-d08c-4178-8218-4df8554c0b0e": return DefaultClientSideWebParts.CustomMessageRegion;
                 case "2161a1c6-db61-4731-b97c-3cdb303f7cbb": return DefaultClientSideWebParts.Divider;
 #if !ONPREMISES
-                case "b19b3b9e-8d13-4fec-a93c-401a091c0707": return DefaultClientSideWebParts.MicrosoftForms;
+                
 #endif
                 case "8654b779-4886-46d4-8ffb-b5ed960ee986": return DefaultClientSideWebParts.Spacer;
 #if !ONPREMISES
+                case "e377ea37-9047-43b9-8cdb-a761be2f8e09": return DefaultClientSideWebParts.BingMap;
+                // Seems like we've been having 2 guids to identify this web part...
+                // Now that _api/web/GetClientSideWebParts returns both guids / controls we can distinguish News v NewsReel
+                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.News;
+                case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
+                case "6676088b-e28e-4a90-b9cb-d0d0303cd2eb": return DefaultClientSideWebParts.GroupCalendar;
+                case "b19b3b9e-8d13-4fec-a93c-401a091c0707": return DefaultClientSideWebParts.MicrosoftForms;
                 case "243166f5-4dc3-4fe2-9df2-a7971b546a0a": return DefaultClientSideWebParts.ClientWebPart;
                 case "9d7e898c-f1bb-473a-9ace-8b415036578b": return DefaultClientSideWebParts.PowerApps;
                 case "7b317bca-c919-4982-af2f-8399173e5a1e": return DefaultClientSideWebParts.CodeSnippet;

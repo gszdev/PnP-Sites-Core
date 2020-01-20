@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
     {
         private static string UserName;
 
-#region Test initialization
+        #region Test initialization
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
                 DeleteListsImplementation(clientContext);
             }
         }
-#endregion
+        #endregion
 
         /// <summary>
         /// Important: the Azure AD you're using here needs to be consented first, otherwise you'll get an access denied.
@@ -47,11 +47,17 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             string spoUserName = AuthenticationTests.UserName;
             string azureADCertPfxPassword = TestCommon.AzureADCertPfxPassword;
             string azureADClientId = TestCommon.AzureADClientId;
+            string azureADCertificatePath = TestCommon.AzureADCertificatePath;
+            if (string.IsNullOrEmpty(azureADCertificatePath))
+            {
+                azureADCertificatePath = @"resources\PnPAzureAppTest.pfx";
+            }
 
-            if (String.IsNullOrEmpty(azureADCertPfxPassword) ||
-                String.IsNullOrEmpty(azureADClientId) ||
-                String.IsNullOrEmpty(spoUserName) ||
-                String.IsNullOrEmpty(siteUrl))
+            if (String.IsNullOrEmpty(azureADCertificatePath)
+                || String.IsNullOrEmpty(azureADCertPfxPassword)
+                || String.IsNullOrEmpty(azureADClientId)
+                || String.IsNullOrEmpty(spoUserName)
+                || String.IsNullOrEmpty(siteUrl))
             {
                 Assert.Inconclusive("Not enough information to execute this test is passed via the app.config file.");
             }
@@ -65,11 +71,22 @@ namespace OfficeDevPnP.Core.Tests.Authentication
                 // Instantiate a ClientContext object based on the defined Azure AD application
                 if (new Uri(siteUrl).DnsSafeHost.Contains("spoppe.com"))
                 {
-                    cc = new AuthenticationManager().GetAzureADAppOnlyAuthenticatedContext(siteUrl, azureADClientId, domain, @"resources\PnPAzureAppTest.pfx", azureADCertPfxPassword, AzureEnvironment.PPE);
+                    cc = new AuthenticationManager().GetAzureADAppOnlyAuthenticatedContext(
+                        siteUrl, 
+                        azureADClientId, 
+                        domain,
+                        azureADCertificatePath,
+                        azureADCertPfxPassword, 
+                        AzureEnvironment.PPE);
                 }
                 else
                 {
-                    cc = new AuthenticationManager().GetAzureADAppOnlyAuthenticatedContext(siteUrl, azureADClientId, domain, @"resources\PnPAzureAppTest.pfx", azureADCertPfxPassword);
+                    cc = new AuthenticationManager().GetAzureADAppOnlyAuthenticatedContext(
+                        siteUrl, 
+                        azureADClientId, 
+                        domain,
+                        azureADCertificatePath, 
+                        azureADCertPfxPassword);
                 }
 
                 // Check if we can read a property from the site

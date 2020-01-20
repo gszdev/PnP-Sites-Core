@@ -120,6 +120,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
 #if !ONPREMISES
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
+#endif 
+#if !SP2013 && !SP2016
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
 #endif
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
@@ -359,9 +361,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
 #if !ONPREMISES
                 if (!calledFromHierarchy && provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
 #endif
 #if !SP2013 && !SP2016
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
 #endif
 #if !ONPREMISES

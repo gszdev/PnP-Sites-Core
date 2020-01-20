@@ -896,10 +896,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
             // We cannot configure Hidden property for Phonetic fields
-            if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts
-                && (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
-                || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
-                || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            //if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts
+            //    && (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+            //    || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+            //    || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            if (CanConfigureHiddenPropertyForField(siteList, fieldRef))
             {
                 if (fieldRef.Hidden != listField.Hidden)
                 {
@@ -921,6 +922,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return listField;
+        }
+
+        private static bool CanConfigureHiddenPropertyForField(List siteList, FieldRef fieldRef)
+        {
+            bool result = true;
+
+            try
+            {
+                if (
+                    (
+                        // We cannot configure Hidden property for Phonetic fields 
+                        siteList.BaseTemplate == (int)ListTemplateType.Contacts
+                        && fieldRef.Name != null
+                        &&
+                        (
+                            fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+                            || fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase)
+                            || fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase)
+                        )
+                    )
+#if ONPREMISES
+                || 
+                    ( 
+                        // We cannot configure Hidden property for folowing fields 
+                        fieldRef.Name != null 
+                        &&  
+                        ( 
+                            fieldRef.Name.Equals("_ComplianceFlags", StringComparison.InvariantCultureIgnoreCase) 
+                            || fieldRef.Name.Equals("_ComplianceTag", StringComparison.InvariantCultureIgnoreCase)
+                            || fieldRef.Name.Equals("_ComplianceTagWrittenTime", StringComparison.InvariantCultureIgnoreCase) 
+                            || fieldRef.Name.Equals("_ComplianceTagUserId", StringComparison.InvariantCultureIgnoreCase) 
+                            || fieldRef.Name.Equals("_IsRecord", StringComparison.InvariantCultureIgnoreCase) 
+                        ) 
+                    ) 
+#endif
+                )
+                {
+                    result = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return result;
         }
 
         private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser, Web web)
@@ -957,7 +1004,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var isDirty = false;
 
 #if !SP2013
-            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && (createdField.Title != fieldRef.DisplayName || fieldRef.DisplayName.ContainsResourceToken()))
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) 
+                && (createdField.Title != fieldRef.DisplayName || fieldRef.DisplayName.ContainsResourceToken()))
             {
                 if (fieldRef.DisplayName.ContainsResourceToken())
                 {
@@ -1212,11 +1260,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.MajorWithMinorVersionsLimit,
                 l => l.MajorVersionLimit
 #if !SP2013 && !SP2016
-, l => l.ListExperienceOptions
-, l => l.ReadSecurity
-, l => l.WriteSecurity
+                , l => l.ListExperienceOptions
+                , l => l.ReadSecurity
+                , l => l.WriteSecurity
 #endif
-);
+            );
+
             web.Context.ExecuteQueryRetry();
 
             if (existingList.BaseTemplate == templateList.TemplateType)
@@ -1326,8 +1375,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
 #if !SP2013 && !SP2016
-                isDirty |= existingList.Set(x => x.ListExperienceOptions, (Microsoft.SharePoint.Client.ListExperience)Enum.Parse(typeof(Microsoft.SharePoint.Client.ListExperience), templateList.ListExperience.ToString()));
-
+                isDirty |= existingList.Set(x => x.ListExperienceOptions, 
+                    (Microsoft.SharePoint.Client.ListExperience)Enum.Parse(typeof(Microsoft.SharePoint.Client.ListExperience), 
+                    templateList.ListExperience.ToString()));
 #endif
                 if (existingList.BaseTemplate != (int)ListTemplateType.Survey
                     && existingList.BaseTemplate != (int)ListTemplateType.DocumentLibrary
@@ -1632,14 +1682,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 newUserCustomAction.TitleResource.SetUserResourceValue(userCustomAction.Title, parser);
             }
+
             if (!string.IsNullOrEmpty(userCustomAction.Description) && userCustomAction.Description.ContainsResourceToken())
             {
                 newUserCustomAction.DescriptionResource.SetUserResourceValue(userCustomAction.Description, parser);
             }
+
             if (userCustomAction.ClientSideComponentId != null && userCustomAction.ClientSideComponentId != Guid.Empty)
             {
                 newUserCustomAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
             }
+
             if (!string.IsNullOrEmpty(userCustomAction.ClientSideComponentProperties))
             {
                 newUserCustomAction.ClientSideComponentProperties = parser.ParseString(userCustomAction.ClientSideComponentProperties);
@@ -2235,8 +2288,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ReadSecurity = siteList.ReadSecurity,
                         WriteSecurity = siteList.WriteSecurity,
 #endif
-                        MaxVersionLimit =
-                            siteList.IsPropertyAvailable("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
+                        MaxVersionLimit = siteList.IsPropertyAvailable("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
                         EnableMinorVersions = siteList.EnableMinorVersions,
                         MinorVersionLimit =
                             siteList.IsPropertyAvailable("MajorWithMinorVersionsLimit")

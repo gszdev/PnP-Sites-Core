@@ -17,8 +17,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         public void GetGroupInfoTest()
         {
             using (var context = TestCommon.CreateClientContext())
-            {
-                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfo(context, "demo1").GetAwaiter().GetResult();
+            {                
+                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfoAsync(context, "demo1").GetAwaiter().GetResult();
             }
         }
 

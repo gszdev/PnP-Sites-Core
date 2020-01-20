@@ -33,7 +33,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public override string NamespaceUri
         {
-            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_01); }
+            get 
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_01);
+#pragma warning restore CS0618 // Type or member is obsolete
+            }
         }
 
         public override string NamespacePrefix
