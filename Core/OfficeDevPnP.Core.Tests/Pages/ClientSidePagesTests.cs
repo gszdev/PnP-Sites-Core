@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
     public class ClientSidePagesTests
     {
 
-#region Test initialization
+        #region Test initialization
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {

@@ -1,10 +1,11 @@
-/**
+ 
+ /**
  * PnP SharePoint - Responsiveness
  * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
  * @see {@link http://usejsdoc.org/|JSDoc}
  */
 
-/*
+ /*
  * PnPResponsiveApp
  * @namespace
  */
@@ -14,7 +15,7 @@ if (window.hasOwnProperty('Type')) {
     window.PnPResponsiveApp = window.PnPResponsiveApp || {};
 }
 
-/**
+ /**
  * PnP Responsive
  * @class
  */
@@ -276,7 +277,7 @@ PnPResponsiveApp.Main = (function () {
     };
 })();
 
-// Register Responsive Behavior after SP page is loaded
+ // Register Responsive Behavior after SP page is loaded
 _spBodyOnLoadFunctionNames.push("responsiveStartup");
 
 function responsiveStartup() {

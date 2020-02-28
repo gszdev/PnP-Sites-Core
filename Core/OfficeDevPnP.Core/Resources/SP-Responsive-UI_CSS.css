@@ -14,7 +14,7 @@
     min-width: auto;
 }
 
-/* Make sure dialog windows don't break */
+ /* Make sure dialog windows don't break */
 .ms-dialog #contentRow {
     margin-left: 0;
 }
@@ -28,7 +28,7 @@
     font-size: 1em;
 }
 
-/* Tablet/smartphones common styles for collapsibles */
+ /* Tablet/smartphones common styles for collapsibles */
 @media only screen and (max-width : 768px) {
     .mobile-only {
         display: block;
@@ -215,7 +215,7 @@
     }
 }
 
-/* Tablets */
+ /* Tablets */
 @media only screen and (min-width: 481px) and (max-width : 768px) {
 
     /* Sidebar navigation toggling */
@@ -329,7 +329,7 @@
     }
 }
 
-/* Smartphones */
+ /* Smartphones */
 @media screen and (max-width: 480px) {
 
     div#s4-bodyContainer {
@@ -540,7 +540,7 @@
     }
 }
 
-/* SETTINGS */
+ /* SETTINGS */
 .pnp-settingsdiv {
     width: 250px;
     display: inline-block;

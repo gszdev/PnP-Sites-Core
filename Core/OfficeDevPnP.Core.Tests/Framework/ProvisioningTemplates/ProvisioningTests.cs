@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         {
             using (var context = TestCommon.CreateClientContext())
             {
-                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfo(context, "demo1").GetAwaiter().GetResult();
+                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfoAsync(context, "demo1").GetAwaiter().GetResult();
             }
         }
 
@@ -150,9 +150,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
 
             using (var tenantContext = TestCommon.CreateTenantClientContext())
-            {
-                var applyingInformation = new ProvisioningTemplateApplyingInformation();
-                applyingInformation.ProgressDelegate = (message, step, total) =>
+            {                
+                var applyConfiguration = new ApplyConfiguration();
+                applyConfiguration.ProgressDelegate = (message, step, total) =>
                 {
                     if (message != null)
                     {
@@ -163,7 +163,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
                 var tenant = new Tenant(tenantContext);
 
-                tenant.ApplyProvisionHierarchy(hierarchy, sequence.ID, applyingInformation);
+                tenant.ApplyTenantTemplate(hierarchy, sequence.ID, applyConfiguration);
             }
         }
     }

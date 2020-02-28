@@ -719,8 +719,9 @@ namespace Microsoft.SharePoint.Client
                     searchNavigation[i].DeleteObject();
                 }
                 web.Context.ExecuteQueryRetry();
-#if !ONPREMISES
+
             }
+#if !ONPREMISES
             else if (navigationType == NavigationType.Footer)
             {
                 var footerNavigation = web.LoadFooterNavigation();
@@ -732,8 +733,8 @@ namespace Microsoft.SharePoint.Client
                     }
                     web.Context.ExecuteQueryRetry();
                 }
-#endif
             }
+#endif
         }
 
         /// <summary>

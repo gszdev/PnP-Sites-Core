@@ -188,7 +188,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.Last();
+                var site = siteCollections.Last();                
                 var siteExists1 = tenant.SiteExists(site.Url);
                 Assert.IsTrue(siteExists1);
 

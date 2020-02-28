@@ -575,7 +575,7 @@ namespace Microsoft.SharePoint.Client
                 }
             }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (!additionalAttributesList.Contains("ClientSideComponentId"))
             {
                 if (fieldCreationInformation.ClientSideComponentId != Guid.Empty)
@@ -1125,8 +1125,9 @@ namespace Microsoft.SharePoint.Client
                 var fldInfo = new FieldLinkCreationInformation();
                 fldInfo.Field = field;
                 contentType.FieldLinks.Add(fldInfo);
-                contentType.Update(updateChildren);
-                web.Context.ExecuteQueryRetry();
+                // contentType.Update(updateChildren);
+                // web.Context.ExecuteQueryRetry();
+                contentType.SafeUpdate(true);
 
                 flink = contentType.FieldLinks.GetById(field.Id);
             }
@@ -1139,8 +1140,9 @@ namespace Microsoft.SharePoint.Client
                 // Update FieldLink
                 flink.Required = required;
                 flink.Hidden = hidden;
-                contentType.Update(true);
-                web.Context.ExecuteQueryRetry();
+                // contentType.Update(true);
+                // web.Context.ExecuteQueryRetry();
+                contentType.SafeUpdate(true);
             }
         }
 
@@ -1629,10 +1631,51 @@ namespace Microsoft.SharePoint.Client
             }
             if (isDirty)
             {
-                contentType.Update(true);
-                web.Context.ExecuteQueryRetry();
+                // contentType.Update(true);
+                // web.Context.ExecuteQueryRetry();
+                contentType.SafeUpdate(true);
             }
             return contentType;
+        }
+
+        /// <summary>
+        /// Updates the content type definition that is stored in the database and, optionally, updates all content types that inherit from the content type.
+        /// This method handles readonly content types also.
+        /// </summary>
+        /// <param name="contentType">Content Type</param>
+        /// <param name="updateChildren">true to update content types that inherit from the content type; otherwise, false.</param>
+        public static void SafeUpdate(this ContentType contentType, bool updateChildren)
+        {
+            //ToDo: avoid exceptions like: Microsoft.SharePoint.SPContentTypeReadOnlyException
+            // Microsoft.SharePoint.Client.ServerException: The content type "CT_?" at "/sites/TestPnPSC_12345_" is read only.
+            bool originalReadOnlyValue = contentType.ReadOnly;
+            if (contentType.ReadOnly)
+            {
+                contentType.ReadOnly = false;
+
+                contentType.Update(true);
+                contentType.Context.ExecuteQueryRetry();
+
+                contentType.RefreshLoad();
+                contentType.Context.ExecuteQueryRetry();
+            }
+            else
+            {
+                contentType.Update(true);
+                contentType.Context.ExecuteQueryRetry();
+            }
+
+            if (contentType.ReadOnly != originalReadOnlyValue)
+            {
+                //Restore the original ReadOnly value
+                contentType.ReadOnly = originalReadOnlyValue;
+
+                contentType.Update(true);
+                contentType.Context.ExecuteQueryRetry();
+
+                contentType.RefreshLoad();
+                contentType.Context.ExecuteQueryRetry();
+            }
         }
 
         /// <summary>
@@ -2192,7 +2235,7 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 
         #region Localization
 
@@ -2248,8 +2291,9 @@ namespace Microsoft.SharePoint.Client
             // Set translations for the culture
             contentType.NameResource.SetValueForUICulture(cultureName, nameResource);
             contentType.DescriptionResource.SetValueForUICulture(cultureName, descriptionResource);
-            contentType.Update(true);
-            contentType.Context.ExecuteQueryRetry();
+            // contentType.Update(true);
+            // contentType.Context.ExecuteQueryRetry();
+            contentType.SafeUpdate(true);
         }
 
         /// <summary>

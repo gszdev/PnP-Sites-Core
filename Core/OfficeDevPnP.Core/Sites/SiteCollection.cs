@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !SP2013 && !SP2016
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,6 +15,7 @@ using System.Text.Encodings.Web;
 #endif
 using System.Threading.Tasks;
 using System.Web;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Sites
 {
@@ -84,7 +85,9 @@ namespace OfficeDevPnP.Core.Sites
             {
                 payload.Add("SiteDesignId", siteDesignId);
             }
+#if !SP2019
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
+#endif
 
             return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
         }
@@ -162,13 +165,17 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
                     }
+#if !SP2019
                     creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+#endif
                     optionalParams.Add("CreationOptions", creationOptionsValues);
-
-                    if (siteCollectionCreationInformation.Owners != null && siteCollectionCreationInformation.Owners.Length > 0)
+#if !SP2019
+                    if (siteCollectionCreationInformation.Owners != null
+                        && siteCollectionCreationInformation.Owners.Length > 0)
                     {
                         optionalParams.Add("Owners", siteCollectionCreationInformation.Owners);
                     }
+#endif
                     payload.Add("optionalParams", optionalParams);
 
                     var body = payload;
@@ -337,6 +344,15 @@ namespace OfficeDevPnP.Core.Sites
                 throw new Exception("You need to set the owner in App-only context");
             }
 
+#if SP2019
+            if (clientContext.IsAppOnly()
+                && !string.IsNullOrEmpty(owner))
+            {
+                //"The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'. Make sure to only use property names that are defined by the type."
+                throw new Exception("The Owner cannot be set in an App-Only context. Cause SharePoint 2019 does not support the owner property yet.");
+            }
+#endif
+
             var accessToken = clientContext.GetAccessToken();
 
             using (var handler = new HttpClientHandler())
@@ -460,6 +476,38 @@ namespace OfficeDevPnP.Core.Sites
                                         }
                                         else
                                         {
+                                            var errorSb = new System.Text.StringBuilder();
+                                            errorSb.AppendLine($"Result:{responseString}");
+
+                                            //var System.Net.Http.HttpResponseMessage
+                                            //if(response.Headers["SPRequestGuid"] != null)
+                                            //if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase)))
+                                            if (response.Headers.Contains("SPRequestGuid"))
+                                            {
+                                                var values = response.Headers.GetValues("SPRequestGuid");
+                                                if (values != null)
+                                                {
+                                                    var spRequestGuid = values.FirstOrDefault();
+                                                    errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                                                }
+                                            }
+
+                                            clientContext.Web.EnsureProperty(w => w.CurrentUser);
+                                            clientContext.Web.CurrentUser.EnsureProperty(u => u.LoginName);
+                                            errorSb.AppendLine($"CurrentUser / Owner: {clientContext.Web.CurrentUser.LoginName}");
+#if SP2019
+
+                                            if (clientContext.Web.CurrentUser.LoginName.Contains("app@sharepoint"))
+                                            {
+                                                errorSb.AppendLine($"Please check the account used as owner for the site to create." 
+                                                + $" Consider that the AppPrincipal for App-Only '{clientContext.Web.CurrentUser.LoginName}' cannot be used as site owner."
+                                                + " Setting the 'owner' property does not work. It will lead to the following exception: "
+                                                + " The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'.Make sure to only use property names that are defined by the type.");
+
+                                            }
+#endif
+                                            Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
+
                                             throw new Exception($"OfficeDevPnP.Core.Sites.SiteCollection.CreateAsync: Could not create {payload["WebTemplate"].ToString()} site.");
                                         }
                                     }
@@ -585,6 +633,7 @@ namespace OfficeDevPnP.Core.Sites
             return payload;
         }
 
+#if !SP2019
         /// <summary>
         /// Groupifies a classic team site by creating a group for it and connecting the site with the newly created group
         /// </summary>
@@ -709,7 +758,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
-
+#endif
 
         private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
@@ -739,6 +788,7 @@ namespace OfficeDevPnP.Core.Sites
             return Guid.Empty;
         }
 
+#if !SP2019
         /// <summary>
         /// Checks if a given alias is already in use or not
         /// </summary>
@@ -1052,6 +1102,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseString);
             }
         }
+#endif
     }
 }
 #endif

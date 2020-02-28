@@ -2600,13 +2600,14 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /**
+        ///   Looks up a localized string similar to 
+        /// /**
         /// * PnP SharePoint - Responsiveness
         /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
         /// * @see {@link http://usejsdoc.org/|JSDoc}
         /// */
         ///
-        ////*
+        /// /*
         /// * PnPResponsiveApp
         /// * @namespace
         /// */
@@ -2616,11 +2617,11 @@ namespace OfficeDevPnP.Core {
         ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
         ///}
         ///
-        ////**
+        /// /**
         /// * PnP Responsive
         /// * @class
         /// */
-        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
+        ///PnPResponsiveApp.Main = (function ( [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2631,7 +2632,7 @@ namespace OfficeDevPnP.Core {
         /// <summary>
         ///   Looks up a localized string similar to .mobile-only {
         ///    display: none;
-        ///}
+        /// }
         ///
         ///#sideNavBox, #contentRow, #siteIcon {
         ///    -webkit-transition: all 400ms ease;
@@ -2641,11 +2642,11 @@ namespace OfficeDevPnP.Core {
         ///    transition: all 400ms ease;
         ///}
         ///
-        ///#contentBox {
+        /// #contentBox {
         ///    min-width: auto;
         ///}
         ///
-        ////* Make sure dialog windows don&apos;t break */
+        /// /* Make sure dialog windows don&apos;t break */
         ///.ms-dialog #contentRow {
         ///    margin-left: 0;
         ///}

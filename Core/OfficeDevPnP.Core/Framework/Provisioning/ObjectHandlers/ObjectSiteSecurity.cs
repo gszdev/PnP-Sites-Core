@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define ADD_GROUP_ID_TOKENS //For testing
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
@@ -43,6 +45,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var siteSecurity = template.Security;
+#if ADD_GROUP_ID_TOKENS
+                bool newAssociatedOwnerGroupCreated = false;
+                bool newAssociatedMemberCreated = false;
+                bool newAssociatedVisitorGroupCreated = false;
+#endif
 
                 if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
                 {
@@ -66,6 +73,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // group does not exist? create!
                                 web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
                                 web.Update();
+#if ADD_GROUP_ID_TOKENS
+                                newAssociatedOwnerGroupCreated = true;
+#endif
                             }
                         }
 
@@ -74,15 +84,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (parsedAssociatedOwnerGroupName == string.Empty)
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-                                //web.AssociatedOwnerGroup = null;
-                                //web.Update();
+#if !SP2013 && !SP2016
+                                web.AssociatedOwnerGroup = null;
+                                web.Update();
+#endif
                             }
                             else if (web.GroupExists(parsedAssociatedOwnerGroupName))
                             {
                                 var ownerGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
                                 web.Context.Load(ownerGroupCandidate,
                                     g => g.Id);
-                                web.Context.Load(web.AssociatedOwnerGroup, 
+                                web.Context.Load(web.AssociatedOwnerGroup,
                                     g => g.Id);
                                 web.Context.ExecuteQueryRetry();
                                 // there is no associated group yet OR
@@ -92,7 +104,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     web.AssociatedOwnerGroup = ownerGroupCandidate;
                                     web.Update();
                                 }
-                            } else
+                            }
+                            else
                             {
                                 scope.LogWarning("Failed to assign '{0}' as associated owner group. Group does not exist.", parsedAssociatedOwnerGroupName);
                             }
@@ -109,6 +122,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // group does not exist? create!
                                 web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
                                 web.Update();
+#if ADD_GROUP_ID_TOKENS
+                                newAssociatedMemberCreated = true;
+#endif
                             }
                         }
 
@@ -117,9 +133,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (parsedAssociatedMemberGroupName == string.Empty)
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-                                //web.AssociatedMemberGroup = null;
-                                //web.Update();
-                            } else if (web.GroupExists(parsedAssociatedMemberGroupName))
+#if !SP2013 && !SP2016
+                                web.AssociatedMemberGroup = null;
+                                web.Update();
+#endif
+                            }
+                            else if (web.GroupExists(parsedAssociatedMemberGroupName))
                             {
                                 var memberGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
                                 web.Context.Load(memberGroupCandidate,
@@ -160,8 +179,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (parsedAssociatedVisitorGroupName == string.Empty)
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-                                //web.AssociatedVisitorGroup = null;
-                                //web.Update();
+#if !SP2013 && !SP2016
+                                web.AssociatedVisitorGroup = null;
+                                web.Update();
+#endif
                             }
                             else if (web.GroupExists(parsedAssociatedVisitorGroupName))
                             {
@@ -190,7 +211,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     } else
                     {
-                        if (createNewAssociatedOwnerGroup || createNewAssociatedMemberGroup || createNewAssociatedVisitorGroup || setAssociatedOwnerGroup || setAssociatedMemberGroup|| setAssociatedVisitorGroup)
+                        if (createNewAssociatedOwnerGroup
+                            || createNewAssociatedMemberGroup
+                            || createNewAssociatedVisitorGroup
+                            || setAssociatedOwnerGroup
+                            || setAssociatedMemberGroup
+                            || setAssociatedVisitorGroup)
                         {
                             scope.LogWarning("Won't modify associated group configuration since the template is applied to a NoScript site.");
                         }
@@ -201,25 +227,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 // need to load the groups for the ServerObjectIsNull()-check to get correct results
-                web.Context.Load(ownerGroup);
-                web.Context.Load(memberGroup);
-                web.Context.Load(visitorGroup);
+                if (ownerGroup != null
+                    || memberGroup != null
+                    || visitorGroup != null)
+                {
+                    if (ownerGroup != null)
+                    {
+                        web.Context.Load(ownerGroup);
+                    }
+
+                    if (memberGroup != null)
+                    {
+                        web.Context.Load(memberGroup);
+                    }
+
+                    if (visitorGroup != null)
+                    {
+                        web.Context.Load(visitorGroup);
+                    }
+                }
                 web.Context.ExecuteQueryRetry();
 #endif
 
-                if (!ownerGroup.ServerObjectIsNull())
+                if (ownerGroup != null
+                    && !ownerGroup.ServerObjectIsNull())
                 {
                     web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
+#if ADD_GROUP_ID_TOKENS
+                    if (newAssociatedOwnerGroupCreated)
+                    {
+                        parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
+                    }
+#endif
                 }
-                if (!memberGroup.ServerObjectIsNull())
+
+                if (memberGroup != null
+                    && !memberGroup.ServerObjectIsNull())
                 {
                     web.Context.Load(memberGroup, o => o.Title, o => o.Users);
+#if ADD_GROUP_ID_TOKENS
+                    if (newAssociatedMemberCreated)
+                    {
+                        parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.members));
+                    }
+#endif
                 }
-                if (!visitorGroup.ServerObjectIsNull())
+
+
+                if (visitorGroup != null
+                    && !visitorGroup.ServerObjectIsNull())
                 {
                     web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
+#if ADD_GROUP_ID_TOKENS
+                    if (newAssociatedVisitorGroupCreated)
+                    {
+                        parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.visitors));
+                    }
+#endif
                 }
 
                 web.Context.Load(web.SiteUsers);
@@ -228,15 +294,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (siteSecurity.ClearExistingOwners)
                 {
-                    ClearExistingUsers(web.AssociatedOwnerGroup);
+                    if (web.AssociatedOwnerGroup != null
+                        && !web.AssociatedOwnerGroup.ServerObjectIsNull())
+                    {
+                        ClearExistingUsers(web.AssociatedOwnerGroup);
+                    }
                 }
+
                 if (siteSecurity.ClearExistingMembers)
                 {
-                    ClearExistingUsers(web.AssociatedMemberGroup);
+                    if (web.AssociatedMemberGroup != null
+                        && !web.AssociatedMemberGroup.ServerObjectIsNull())
+                    {
+                        ClearExistingUsers(web.AssociatedMemberGroup);
+                    }
                 }
+
                 if (siteSecurity.ClearExistingVisitors)
                 {
-                    ClearExistingUsers(web.AssociatedVisitorGroup);
+                    if (web.AssociatedVisitorGroup != null
+                        && !web.AssociatedVisitorGroup.ServerObjectIsNull())
+                    {
+                        ClearExistingUsers(web.AssociatedVisitorGroup);
+                    }
                 }
 
                 IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
@@ -245,15 +325,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     associatedGroupToken.ClearCache();
                 }
 
-                if (!ownerGroup.ServerObjectIsNull())
+                if (ownerGroup != null
+                    && !ownerGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser);
                 }
-                if (!memberGroup.ServerObjectIsNull())
+
+                if (memberGroup != null
+                    && !memberGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser);
                 }
-                if (!visitorGroup.ServerObjectIsNull())
+
+                if (visitorGroup != null
+                    && !visitorGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }

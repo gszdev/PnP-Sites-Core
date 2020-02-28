@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using OfficeDevPnP.Core.Utilities.Context;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Sites;
 #endif
 
@@ -223,9 +223,39 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
+                        var errorSb = new System.Text.StringBuilder();
+
+                        errorSb.AppendLine(wex.ToString());
+
+                        if (response != null)
+                        {
+                            //if(response.Headers["SPRequestGuid"] != null) 
+                            if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase)))
+                            {
+                                var spRequestGuid = response.Headers["SPRequestGuid"];
+                                errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                            }
+                        }
+
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
+
                         throw;
                     }
+                }
+                catch (Microsoft.SharePoint.Client.ServerException serverEx)
+                {
+                    var errorSb = new System.Text.StringBuilder();
+
+                    errorSb.AppendLine(serverEx.ToString());
+                    errorSb.AppendLine($"ServerErrorCode: {serverEx.ServerErrorCode}");
+                    errorSb.AppendLine($"ServerErrorTypeName: {serverEx.ServerErrorTypeName}");
+                    errorSb.AppendLine($"ServerErrorTraceCorrelationId: {serverEx.ServerErrorTraceCorrelationId}");
+                    errorSb.AppendLine($"ServerErrorValue: {serverEx.ServerErrorValue}");
+                    errorSb.AppendLine($"ServerErrorDetails: {serverEx.ServerErrorDetails}");
+
+                    Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
+
+                    throw;
                 }
             }
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
@@ -499,14 +529,25 @@ namespace Microsoft.SharePoint.Client
             // If any
             if (!String.IsNullOrEmpty(accessToken))
             {
-                // Try to decode the access token
-                var token = new JwtSecurityToken(accessToken);
-
-                // Search for the UPN claim, to see if we have user's delegation
-                var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
-                if (String.IsNullOrEmpty(upn))
+                try
                 {
-                    result = true;
+                    // Try to decode the access token
+                    var token = new JwtSecurityToken(accessToken);
+
+                    // Search for the UPN claim, to see if we have user's delegation
+                    var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
+                    if (String.IsNullOrEmpty(upn))
+                    {
+                        result = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    {
+                        result = true;
+                        // Maybe Newtonsoft.Json assembly is not loaded?
+                        throw;
+                    }
                 }
             }
             else if (clientContext.Credentials == null)
@@ -750,7 +791,24 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        throw new Exception(await response.Content.ReadAsStringAsync());
+                        // throw new Exception(await response.Content.ReadAsStringAsync());
+                        var errorSb = new System.Text.StringBuilder();
+
+                        errorSb.AppendLine(await response.Content.ReadAsStringAsync());
+                        //  var System.Net.Http.HttpResponseMessage
+                        //  if(response.Headers["SPRequestGuid"] != null)
+                        //  if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase))) 
+                        if (response.Headers.Contains("SPRequestGuid"))
+                        {
+                            var values = response.Headers.GetValues("SPRequestGuid");
+                            if (values != null)
+                            {
+                                var spRequestGuid = values.FirstOrDefault();
+                                errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                            }
+                        }
+
+                        throw new Exception(errorSb.ToString());
                     }
                 }
                 var contextInformation = JsonConvert.DeserializeObject<dynamic>(responseString);
@@ -768,7 +826,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// BETA: Creates a Communication Site Collection
         /// </summary>
@@ -794,7 +852,9 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
+#endif
 
+#if !SP2013 && !SP2016 && !SP2019
         /// <summary>
         /// BETA: Creates a Team Site Collection
         /// </summary>

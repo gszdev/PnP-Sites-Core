@@ -40,9 +40,21 @@ namespace OfficeDevPnP.Core.Tests.Sites
             using (var clientContext = TestCommon.CreateTenantClientContext())
             {
                 var tenant = new Tenant(clientContext);
-                tenant.DeleteSiteCollection($"{baseUrl}/sites/site{communicationSiteGuid}", false);
+
+                var communicationSiteUrl = $"{baseUrl}/sites/site{communicationSiteGuid}";
+                if (tenant.SiteExistsAnywhere(communicationSiteUrl) != SiteExistence.No)
+                {
+                    tenant.DeleteSiteCollection(communicationSiteUrl, false);
+                }
+                
+                var teamSiteUrl = $"{baseUrl}/sites/site{teamSiteGuid}";
+                if (tenant.SiteExistsAnywhere(teamSiteUrl) != SiteExistence.No)
+                {
+                    tenant.DeleteSiteCollection(teamSiteUrl, false);
+                }
+
                 // Commented this, first group cleanup needs to be implemented in this test case
-                //tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
+                // tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
                 //TODO: Cleanup group
             }
         }

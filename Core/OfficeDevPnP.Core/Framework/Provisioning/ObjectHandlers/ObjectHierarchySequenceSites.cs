@@ -245,7 +245,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (groupSiteInfo == null)
                                     {
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(
+                                            tenant.Context as ClientContext,
+                                            siteInfo,
+                                            configuration.Tenant.DelayAfterModernSiteCreation,
+                                            noWait: nowait);
                                     }
                                     else
                                     {
@@ -352,7 +356,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         WriteMessage($"Creating Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(
+                                            tenant.Context as ClientContext,
+                                            siteInfo,
+                                            configuration.Tenant.DelayAfterModernSiteCreation,
+                                            noWait: nowait);
                                     }
                                     if (c.IsHubSite)
                                     {
@@ -403,7 +411,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(
+                                            tenant.Context as ClientContext,
+                                            siteInfo,
+                                            configuration.Tenant.DelayAfterModernSiteCreation,
+                                            noWait: nowait);
                                     }
                                     if (t.IsHubSite)
                                     {
