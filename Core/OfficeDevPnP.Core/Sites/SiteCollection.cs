@@ -1,4 +1,5 @@
 ﻿#if !SP2013 && !SP2016
+using Microsoft.Graph;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -161,6 +162,10 @@ namespace OfficeDevPnP.Core.Sites
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
                     optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     var creationOptionsValues = new List<string>();
+                    if (siteCollectionCreationInformation.SiteDesignId.HasValue)
+                    {
+                        creationOptionsValues.Add($"implicit_formula_292aa8a00786498a87a5ca52d9f4214a_{siteCollectionCreationInformation.SiteDesignId.Value.ToString("D").ToLower()}");
+                    }
                     if (siteCollectionCreationInformation.Lcid != 0)
                     {
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
@@ -633,6 +638,33 @@ namespace OfficeDevPnP.Core.Sites
             return payload;
         }
 
+        private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
+        {
+            if (siteCollectionCreationInformation.SiteDesignId != Guid.Empty)
+            {
+                return siteCollectionCreationInformation.SiteDesignId;
+            }
+            else
+            {
+                switch (siteCollectionCreationInformation.SiteDesign)
+                {
+                    case CommunicationSiteDesign.Topic:
+                        {
+                            return Guid.Empty;
+                        }
+                    case CommunicationSiteDesign.Showcase:
+                        {
+                            return Guid.Parse("6142d2a0-63a5-4ba0-aede-d9fefca2c767");
+                        }
+                    case CommunicationSiteDesign.Blank:
+                        {
+                            return Guid.Parse("f6cc5403-0d63-442e-96c0-285923709ffc");
+                        }
+                }
+            }
+
+            return Guid.Empty;
+        }
 #if !SP2019
         /// <summary>
         /// Groupifies a classic team site by creating a group for it and connecting the site with the newly created group
@@ -758,37 +790,7 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
-#endif
 
-        private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
-        {
-            if (siteCollectionCreationInformation.SiteDesignId != Guid.Empty)
-            {
-                return siteCollectionCreationInformation.SiteDesignId;
-            }
-            else
-            {
-                switch (siteCollectionCreationInformation.SiteDesign)
-                {
-                    case CommunicationSiteDesign.Topic:
-                        {
-                            return Guid.Empty;
-                        }
-                    case CommunicationSiteDesign.Showcase:
-                        {
-                            return Guid.Parse("6142d2a0-63a5-4ba0-aede-d9fefca2c767");
-                        }
-                    case CommunicationSiteDesign.Blank:
-                        {
-                            return Guid.Parse("f6cc5403-0d63-442e-96c0-285923709ffc");
-                        }
-                }
-            }
-
-            return Guid.Empty;
-        }
-
-#if !SP2019
         /// <summary>
         /// Checks if a given alias is already in use or not
         /// </summary>
@@ -1101,6 +1103,47 @@ namespace OfficeDevPnP.Core.Sites
 
                 return await Task.Run(() => responseString);
             }
+        }
+
+        /// <summary>
+        /// Turns a team site into a communication site
+        /// </summary>
+        /// <param name="context">ClientContext of the team site to update to a communication site</param>
+        /// <returns></returns>
+        public static async Task EnableCommunicationSite(ClientContext context)
+        {
+            await EnableCommunicationSite(context, Guid.Parse("96c933ac-3698-44c7-9f4a-5fd17d71af9e"));
+        }
+
+        /// <summary>
+        /// Turns a team site into a communication site
+        /// </summary>
+        /// <param name="context">ClientContext of the team site to update to a communication site</param>
+        /// <param name="designPackageId">Design package id to be applied, 96c933ac-3698-44c7-9f4a-5fd17d71af9e (Topic = default), 6142d2a0-63a5-4ba0-aede-d9fefca2c767 (Showcase) or f6cc5403-0d63-442e-96c0-285923709ffc (Blank)</param>
+        /// <returns></returns>
+        public static async Task EnableCommunicationSite(ClientContext context, Guid designPackageId)
+        {
+
+            if (context == null)
+            {
+                throw new ArgumentNullException("context");
+            }
+
+            context.Web.EnsureProperty(p => p.Url);
+
+            if (designPackageId == Guid.Empty)
+            {
+                throw new Exception("Please specify a valid designPackageId");
+            }
+
+            if (designPackageId != Guid.Parse("96c933ac-3698-44c7-9f4a-5fd17d71af9e") &&  // Topic
+                designPackageId != Guid.Parse("6142d2a0-63a5-4ba0-aede-d9fefca2c767") &&  // Showcase
+                designPackageId != Guid.Parse("f6cc5403-0d63-442e-96c0-285923709ffc"))    // Blank
+            {
+                throw new Exception("Invalid designPackageId specified. Use 96c933ac-3698-44c7-9f4a-5fd17d71af9e (Topic = default), 6142d2a0-63a5-4ba0-aede-d9fefca2c767 (Showcase) or f6cc5403-0d63-442e-96c0-285923709ffc (Blank)");
+            }
+
+            await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
         }
 #endif
     }
