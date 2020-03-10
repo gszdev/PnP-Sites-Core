@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !ONPREMISES
+using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Enums;
@@ -13,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities.Themes
 {
-#if !ONPREMISES
     /// <summary>
     /// Extension class for the Web object useful to apply custom Themes
     /// </summary>
@@ -301,5 +301,5 @@ namespace OfficeDevPnP.Core.Utilities.Themes
         /// </summary>
         UpdateTenantTheme,
     }
-#endif 
 }
+#endif 

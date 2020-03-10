@@ -99,6 +99,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String ClientSideComponentProperties { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value for the ClientSideHostProperties, if any
+        /// </summary>
+        public String ClientSideHostProperties { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -175,6 +180,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Url == other.Url);
         }
 
-        #endregion
+#endregion
     }
 }

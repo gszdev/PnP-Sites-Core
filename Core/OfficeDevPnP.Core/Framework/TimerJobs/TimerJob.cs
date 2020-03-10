@@ -52,16 +52,14 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string domain;
         private string realm;
         private string clientId;
-        private string clientSecret;
-        private string accessToken;
+        private string clientSecret;        
         private AzureEnvironment azureEnvironment;
 #if !ONPREMISES
-
-#else
-        
-        private bool highTrust;
-#endif
+        private string accessToken;
         private string azureTenant;
+#endif
+        private bool highTrust;
+
         private X509Certificate2 certificate;
         private string certificatePath;
         private string certificateIssuerId;
@@ -1566,7 +1564,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
                 else if (AuthenticationType == AuthenticationType.AppOnly)
                 {
-#if ONPREMISES
+// #if ONPREMISES
                     if (this.highTrust)
                     {
                         if (this.certificate != null)
@@ -1578,12 +1576,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                             return GetAuthenticationManager(site).GetHighTrustCertificateAppOnlyAuthenticatedContext(site, this.clientId, this.certificatePath, this.certificatePassword, this.certificateIssuerId);
                         }
                     }
+// #else
                     else
-#else
                     {
                         return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
                     }
-#endif
+// #endif
                 }
             }
             else
@@ -1643,12 +1641,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         }
 #endif
 
-                    /// <summary>
-                    /// Resolves a wildcard site Url into a list of actual site Url's
-                    /// </summary>
-                    /// <param name="site">Wildcard site Url to resolve</param>
-                    /// <param name="resolvedSites">List of resolved site Url's</param>
-                    private void ResolveSite(string site, List<string> resolvedSites)
+        /// <summary>
+        /// Resolves a wildcard site Url into a list of actual site Url's
+        /// </summary>
+        /// <param name="site">Wildcard site Url to resolve</param>
+        /// <param name="resolvedSites">List of resolved site Url's</param>
+        private void ResolveSite(string site, List<string> resolvedSites)
         {
             if (SharePointVersion == 15)
             {

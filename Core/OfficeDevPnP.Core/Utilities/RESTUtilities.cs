@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Utilities
             else if (context.Credentials == null)
             {
                 var cookieString = CookieReader.GetCookie(context.Web.Url)?.Replace("; ", ",")?.Replace(";", ",");
-                if(cookieString == null)
+                if (cookieString == null)
                 {
                     return;
                 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !SP2013 && !SP2016
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
@@ -8,7 +9,6 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
     internal class ObjectApplicationLifecycleManagement : ObjectHandlerBase
     {
         public override string Name
@@ -187,5 +187,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (!web.IsSubSite() && _willProvision.Value);
         }
     }
-#endif
 }
+
+#endif

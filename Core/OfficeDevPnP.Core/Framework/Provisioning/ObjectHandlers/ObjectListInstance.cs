@@ -827,7 +827,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-#if !ONPREMISES || SP2019
+#if !SP2013 && !SP2016
                 // CustomFormatter
                 var customFormatterElement = viewElement.Descendants("CustomFormatter").FirstOrDefault();
                 if (customFormatterElement != null)
@@ -1742,6 +1742,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 newUserCustomAction.ClientSideComponentProperties = parser.ParseString(userCustomAction.ClientSideComponentProperties);
             }
 #endif
+            //TODO:
+            /*
+#if !ONPREMISES
+            if (!string.IsNullOrEmpty(userCustomAction.ClientSideHostProperties))
+            {
+                newUserCustomAction.ClientSideHostProperties  = parser.ParseString(userCustomAction.ClientSideHostProperties);
+            }
+#endif
+            */
 
             newUserCustomAction.Name = userCustomAction.Name;
             newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
@@ -2899,6 +2908,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
                 customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
                 customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
+#endif
+
+                //TODO:
+                /*
+#if !ONPREMISES
+                customAction.ClientSideHostProperties = userCustomAction.ClientSideHostProperties;
+#endif
+                */
+
+#if !SP2013 && !SP2016
                 if (creationInfo.PersistMultiLanguageResources)
                 {
                     siteList.EnsureProperty(l => l.Title);

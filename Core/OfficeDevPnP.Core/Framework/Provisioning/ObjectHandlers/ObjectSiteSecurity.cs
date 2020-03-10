@@ -84,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-#if !SP2013 && !SP2016
+#if !SP2013
                                 web.AssociatedOwnerGroup = null;
                                 web.Update();
 #endif
@@ -133,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-#if !SP2013 && !SP2016
+#if !SP2013
                                 web.AssociatedMemberGroup = null;
                                 web.Update();
 #endif
@@ -179,7 +179,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-#if !SP2013 && !SP2016
+#if !SP2013
                                 web.AssociatedVisitorGroup = null;
                                 web.Update();
 #endif
@@ -227,7 +227,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-#if !SP2013 && !SP2016
+#if !SP2013
                 // need to load the groups for the ServerObjectIsNull()-check to get correct results
                 if (ownerGroup != null
                     || memberGroup != null

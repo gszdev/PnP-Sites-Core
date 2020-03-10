@@ -112,7 +112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                                 var rootFolder = appCatalogContext.Web.EnsureProperty(w => w.RootFolder);
                                 var timeCreated = rootFolder.TimeCreated;
                                 
-                                if (DateTime.UtcNow.Subtract(timeCreated).Hours < 2)
+                                if (DateTime.UtcNow.Subtract(timeCreated).TotalHours < 2)
                                 {
                                     result.CanProvision = false;
                                     result.Issues.Add(new CanProvisionIssue()

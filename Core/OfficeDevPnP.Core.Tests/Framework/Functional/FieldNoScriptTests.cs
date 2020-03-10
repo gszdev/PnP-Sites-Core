@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !SP2013 && !SP2016
+using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
@@ -10,7 +11,6 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
     [TestClass]
     public class FieldNoScriptTests : FunctionalTestBase
     {
@@ -61,5 +61,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         // No need to have these as the engine is blocking creation and extraction of fields at web level
         #endregion
     }
-#endif
 }
+#endif

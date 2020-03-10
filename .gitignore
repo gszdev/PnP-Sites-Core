@@ -181,3 +181,6 @@ FakesAssemblies/
 
 # VS Code Settings
 .vscode/
+
+# Output XML Files
+*-Sample-*-OUT-*.xml

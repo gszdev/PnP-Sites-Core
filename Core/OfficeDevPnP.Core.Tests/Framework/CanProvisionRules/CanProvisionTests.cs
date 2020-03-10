@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
             }
 
             Assert.IsNotNull(result);
-#if ONPREMISES
+#if SP2013 || SP2016
             // Because the "apps" rule is verified here
             Assert.IsFalse(result.CanProvision);
 #else
@@ -126,7 +126,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
             }
 
             Assert.IsNotNull(result);
+#if SP2013 || SP2016
+            // Because the "apps" rule is verified here
+            Assert.IsFalse(result.CanProvision);
+#else
             Assert.IsTrue(result.CanProvision);
+#endif
         }
 
         [TestMethod]

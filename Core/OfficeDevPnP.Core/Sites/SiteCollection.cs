@@ -27,6 +27,7 @@ namespace OfficeDevPnP.Core.Sites
     public static class SiteCollection
     {
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Communication Site Collection and waits for it to be created
         /// </summary>
@@ -35,12 +36,39 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Communication Site Collection and waits for it to be created
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+
+        public static ClientContext Create(
+            ClientContext clientContext,
+            CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, 
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
+            var context = CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                ).GetAwaiter().GetResult();
             return context;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Team Site Collection with no group and waits for it to be created
         /// </summary>
@@ -49,12 +77,38 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Team Site Collection with no group and waits for it to be created
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static ClientContext Create(
+        ClientContext clientContext,
+            TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
+            var context = CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                ).GetAwaiter().GetResult();
             return context;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Team Site Collection and waits for it to be created
         /// </summary>
@@ -63,12 +117,38 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Team Site Collection and waits for it to be created
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static ClientContext Create(
+            ClientContext clientContext,
+            TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false      
+#endif
+            )
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
+            var context = CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                ).GetAwaiter().GetResult();
             return context;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Communication Site Collection
         /// </summary>
@@ -77,7 +157,24 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>        
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Communication Site Collection
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static async Task<ClientContext> CreateAsync(
+            ClientContext clientContext,
+            CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
             Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
 
@@ -90,9 +187,18 @@ namespace OfficeDevPnP.Core.Sites
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
 #endif
 
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
+            return await CreateAsync(clientContext,
+                siteCollectionCreationInformation.Owner,
+                payload,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                );
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Team Site Collection with no group
         /// </summary>
@@ -101,12 +207,39 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+#else
+        /// <summary>
+        /// Creates a new Team Site Collection with no group
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static async Task<ClientContext> CreateAsync(
+            ClientContext clientContext,
+            TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0
+#if !SP2019
+            ,
+            bool noWait = false
+#endif
+            )
         {
             Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
+            return await CreateAsync(
+                clientContext,
+                siteCollectionCreationInformation.Owner,
+                payload,
+                delayAfterCreation
+#if !SP2019
+                ,
+                noWait: noWait
+#endif
+                );
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Creates a new Modern Team Site Collection (so with an Office 365 group connected)
         /// </summary>
@@ -117,11 +250,28 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
+#else
+        /// <summary>
+        /// Creates a new Modern Team Site Collection (so with an Office 365 group connected)
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
+        /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
+        public static async Task<ClientContext> CreateAsync(
+            ClientContext clientContext,
+            TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
             int delayAfterCreation = 0,
             int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            int retryDelay = 1000 * 10, // Wait time default to 10sec,
+            int retryDelay = 1000 * 10 // Wait time default to 10sec
+#if !SP2019
+            ,
             bool noWait = false
+#endif
+
             )
         {
             if (siteCollectionCreationInformation.Alias.Contains(" "))
@@ -198,9 +348,17 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         requestBody.Headers.ContentType = sharePointJsonMediaType;
                     }
+
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
                     }
 
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
@@ -303,6 +461,7 @@ namespace OfficeDevPnP.Core.Sites
                         {
                             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
                         }
+#if !SP2019
                         else
                         {
                             if (!noWait)
@@ -311,6 +470,7 @@ namespace OfficeDevPnP.Core.Sites
                                 WaitForProvisioningIsComplete(responseContext.Web);
                             }
                         }
+#endif
                     }
                     else
                     {
@@ -322,6 +482,7 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Create a modern site without a group (so communication site and modern team sites without group STS#3)
         /// </summary>
@@ -333,11 +494,25 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
+#else
+        /// <summary>
+        /// Create a modern site without a group (so communication site and modern team sites without group STS#3)
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="owner">Owner for the created site (needed when using app-only)</param>
+        /// <param name="payload">Body of the request</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
+        /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+#endif
         private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload,
             int delayAfterCreation = 0,
             int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            int retryDelay = 1000 * 10, // Wait time default to 10sec
-            bool noWait = false
+            int retryDelay = 1000 * 10 // Wait time default to 10sec
+#if !SP2019
+            , bool noWait = false
+#endif
             )
         {
             await new SynchronizationContextRemover();
@@ -391,6 +566,13 @@ namespace OfficeDevPnP.Core.Sites
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (clientContext.Credentials is System.Net.NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
                     }
 
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
@@ -536,6 +718,7 @@ namespace OfficeDevPnP.Core.Sites
                         {
                             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
                         }
+#if !SP2019
                         else
                         {
                             if (!noWait)
@@ -544,17 +727,21 @@ namespace OfficeDevPnP.Core.Sites
                                 WaitForProvisioningIsComplete(responseContext.Web);
                             }
                         }
+#endif
                     }
                     else
                     {
+                        var exceptionMessage = await response.Content.ReadAsStringAsync();
+
                         // Something went wrong...
-                        throw new Exception(await response.Content.ReadAsStringAsync());
+                        throw new Exception(exceptionMessage);
                     }
                 }
                 return await Task.Run(() => responseContext);
             }
         }
 
+#if !SP2019
         private static void WaitForProvisioningIsComplete(Web web, int maxRetryCount = 80, int retryDelay = 1000 * 15)
         {
             bool isProvisioningComplete = true;
@@ -620,7 +807,8 @@ namespace OfficeDevPnP.Core.Sites
                 //throw new Exception($"Server side provisioning of this web did not finish after waiting for {maxRetryCount * retryDelay} milliseconds.");
             }
         }
-
+#endif
+        
         private static Dictionary<string, object> GetRequestPayload(SiteCreationInformation siteCollectionCreationInformation)
         {
             Dictionary<string, object> payload = new Dictionary<string, object>
@@ -633,7 +821,9 @@ namespace OfficeDevPnP.Core.Sites
                 { "Description", siteCollectionCreationInformation.Description ?? "" },
                 { "WebTemplate", siteCollectionCreationInformation.WebTemplate },
                 { "WebTemplateExtensionId", Guid.Empty },
+#if !SP2013 && !SP2016 && !SP2019 // SP2019: Microsoft.OData.Core.ODataException: The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'. Make sure to only use property names that are defined by the type.
                 { "Owner", siteCollectionCreationInformation.Owner }
+#endif
             };
             return payload;
         }

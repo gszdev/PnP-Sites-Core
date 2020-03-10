@@ -137,6 +137,7 @@ namespace OfficeDevPnP.Core.Entities
         /// </summary>
         public string ClientSideComponentProperties { get; set; }
 #endif
+
 #if !ONPREMISES
         /// <summary>
         /// Gets or sets the client side host properties. Only applies to custom actions which are added to SharePoint Online.

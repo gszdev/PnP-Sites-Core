@@ -428,7 +428,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Site collection deletion
-#if !ONPEMISES
+#if !ONPREMISES
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -570,24 +570,6 @@ namespace Microsoft.SharePoint.Client
             return templates;
         }
 
-#if !SP2013
-#if ONPREMISES
-        /// <summary>
-        /// Sets tenant site Properties
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">full URL of site</param>
-        /// <param name="title">site title</param>
-        /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
-        /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
-        public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
-            string title = null,
-            bool? allowSelfServiceUpgrade = null,
-            bool? noScriptSite = null
-        )
-#endif
-#endif
-
 #if !ONPREMISES
         /// <summary>
         /// Sets tenant site Properties
@@ -621,13 +603,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="storageWarningLevel">A storage warning level for when administrators of the site collection receive advance notice before available storage is expended.</param>
         /// <param name="userCodeMaximumLevel">A value that represents the maximum allowed resource usage for the site/</param>
         /// <param name="userCodeWarningLevel">A value that determines the level of resource usage at which a warning e-mail message is sent</param>
-        /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
-        /// <param name="commentsOnSitePagesDisabled">Boolean value which Enables/Disables comments on the Site Pages</param>
-        /// <param name="socialBarOnSitePagesDisabled">Boolean value which Enables/Disables likes and view count on the Site Pages</param>
-        /// <param name="defaultSharingLinkType">Specifies the default link type for the site collection</param>
+        /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>        
         /// <param name="wait">Id true this function only returns when the tenant properties are set, if false it will return immediately</param>
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the tenant properties to be set. If set will override the wait variable. Return true to cancel the wait loop.</param>
-        /// <param name="defaultLinkPermission">Specifies the default link permission for the site collection</param>
 #endif
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
             string title = null,
@@ -836,45 +814,6 @@ namespace Microsoft.SharePoint.Client
 
             return sites;
         }
-
-#if !NETSTANDARD2_0
-        /// <summary>
-        /// Get OneDrive site collections by iterating through all user profiles.
-        /// </summary>
-        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site </param>
-        /// <returns>List of <see cref="SiteEntity"/> objects containing site collection info.</returns>
-        public static IList<SiteEntity> GetOneDriveSiteCollections(this Tenant tenant)
-        {
-            var sites = new List<SiteEntity>();
-            var svcClient = GetUserProfileServiceClient(tenant);
-
-            // get all user profiles
-            var userProfileResult = svcClient.GetUserProfileByIndex(-1);
-
-            while (int.Parse(userProfileResult.NextValue) != -1)
-            {
-                var personalSpaceProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PersonalSpace");
-
-                if (personalSpaceProperty != null && personalSpaceProperty.Values.Any())
-                {
-                    var usernameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "UserName");
-                    var nameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PreferredName");
-                    var url = personalSpaceProperty.Values[0].Value as string;
-                    var name = nameProperty.Values[0].Value as string;
-                    var siteEntity = new SiteEntity
-                    {
-                        Url = url,
-                        Title = name,
-                        SiteOwnerLogin = usernameProperty.Values[0].Value as string
-                    };
-                    sites.Add(siteEntity);
-                }
-
-                userProfileResult = svcClient.GetUserProfileByIndex(int.Parse(userProfileResult.NextValue));
-            }
-
-            return sites;
-        }
 #elif !SP2013
         /// <summary>
         /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
@@ -920,8 +859,45 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-
 #if !NETSTANDARD2_0
+        /// <summary>
+        /// Get OneDrive site collections by iterating through all user profiles.
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site </param>
+        /// <returns>List of <see cref="SiteEntity"/> objects containing site collection info.</returns>
+        public static IList<SiteEntity> GetOneDriveSiteCollections(this Tenant tenant)
+        {
+            var sites = new List<SiteEntity>();
+            var svcClient = GetUserProfileServiceClient(tenant);
+
+            // get all user profiles
+            var userProfileResult = svcClient.GetUserProfileByIndex(-1);
+
+            while (int.Parse(userProfileResult.NextValue) != -1)
+            {
+                var personalSpaceProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PersonalSpace");
+
+                if (personalSpaceProperty != null && personalSpaceProperty.Values.Any())
+                {
+                    var usernameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "UserName");
+                    var nameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PreferredName");
+                    var url = personalSpaceProperty.Values[0].Value as string;
+                    var name = nameProperty.Values[0].Value as string;
+                    var siteEntity = new SiteEntity
+                    {
+                        Url = url,
+                        Title = name,
+                        SiteOwnerLogin = usernameProperty.Values[0].Value as string
+                    };
+                    sites.Add(siteEntity);
+                }
+
+                userProfileResult = svcClient.GetUserProfileByIndex(int.Parse(userProfileResult.NextValue));
+            }
+
+            return sites;
+        }
+
         /// <summary>
         /// Gets the UserProfileService proxy to enable calls to the UPA web service.
         /// </summary>
@@ -946,7 +922,6 @@ namespace Microsoft.SharePoint.Client
             }
             return client;
         }
-#endif
 #endif
 
         #endregion
@@ -1405,11 +1380,14 @@ namespace Microsoft.SharePoint.Client
 #else
         public static string GetTenantRootSiteUrl(this Tenant tenant)
         {
+            tenant.EnsureProperty(t => t.RootSiteUrl);
+
             string result = tenant.RootSiteUrl;
 
-            if(string.IsNullOrEmpty(tenant.RootSiteUrl))
+            if(string.IsNullOrEmpty(result))
             {
                 // Onpremises (SP2019) will always return string.Emtpy for tenant.RootSiteUrl
+
                 //tenant.EnsureProperty(t => t.RootSiteUrl);
                 //var tenantUri = new Uri(tenant.Context.Url);
                 //var rootSiteUri = new Uri(tenantUri.Scheme + "://" + tenantUri.Host + "/");

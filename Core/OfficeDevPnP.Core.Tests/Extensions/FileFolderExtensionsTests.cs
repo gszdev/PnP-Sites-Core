@@ -35,6 +35,19 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             if (documentLibrary == null)
             {
                 documentLibrary = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, DocumentLibraryName, false);
+#if SP2013 // SharePoint 2013 Server Side default behaviour does not create a library with major versioning enabled. 
+                documentLibrary.EnsureProperties(
+                    d => d.EnableVersioning, 
+                    d => d.MajorVersionLimit);
+
+                if (documentLibrary.EnableVersioning == false)
+                {
+                    documentLibrary.EnableVersioning = true;
+                    documentLibrary.MajorVersionLimit = 10;
+                    documentLibrary.Update();
+                    clientContext.ExecuteQueryRetry();
+                }
+#endif
             }
 
             clientContext.Load(documentLibrary.RootFolder.Folders);
@@ -89,9 +102,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             clientContext.ExecuteQueryRetry();
             clientContext.Dispose();
         }
-        #endregion
+#endregion
 
-        #region File tests
+#region File tests
         [TestMethod()]
         public void CheckOutFileTest()
         {
@@ -136,7 +149,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         public void ResetFileToPreviousVersionTest()
         {
             File oldFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
-            clientContext.Load(oldFile, f => f.UIVersionLabel);
+            clientContext.Load(oldFile, 
+                f => f.UIVersionLabel
+                /*, 
+                f => f.UIVersion,
+                f => f.MajorVersion,
+                f => f.MinorVersion,
+                f => f.Versions
+                */
+                );
             clientContext.ExecuteQueryRetry();
 
             if (Version.TryParse(oldFile.UIVersionLabel, out Version oldVersion))
@@ -146,7 +167,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 clientContext.Web.ResetFileToPreviousVersion(file.ServerRelativeUrl, checkInType, commentText);
 
                 File newFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
-                clientContext.Load(newFile, f => f.UIVersionLabel);
+                clientContext.Load(newFile,
+                    f => f.UIVersionLabel
+                    /*,
+                    f => f.UIVersion,
+                    f => f.MajorVersion,
+                    f => f.MinorVersion,
+                    f => f.Versions
+                    */
+                    );
                 clientContext.ExecuteQueryRetry();
 
                 Version.TryParse(newFile.UIVersionLabel, out Version receivedNewVersion);
@@ -224,9 +253,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             var file3 = folder.GetFile(fileName2);
             Assert.IsNull(file3, "File should not exist, but test shows it does.");
         }
-        #endregion
+#endregion
 
-        #region Folder tests
+#region Folder tests
         [TestMethod]
         public void EnsureSiteFolderTest()
         {
@@ -344,7 +373,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             Assert.IsNotNull(ensureLibraryFolderTest);
             Assert.AreEqual(ensureLibraryFolderTest.ServerRelativeUrl.TrimEnd('/'), libraryFolder.ServerRelativeUrl.TrimEnd('/'));
         }
-        #endregion
+#endregion
 
     }
 }

@@ -316,7 +316,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                }
 
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                     var store = session.GetDefaultKeywordsTermStore();
@@ -327,7 +330,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     ctx.Load(set, s => s.Id, s => s.Name, s => s.Terms);
                     ctx.ExecuteQueryRetry();
 
-                    Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
+                    Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));                    
                     StringAssert.Matches(group.Name, new Regex(Regex.Escape(termGroupName)));
                     Assert.AreEqual(_termGroupGuid, group.Id);
 
@@ -373,7 +376,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                }
 
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                     var store = session.GetDefaultKeywordsTermStore();

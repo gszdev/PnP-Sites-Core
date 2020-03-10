@@ -44,16 +44,19 @@ namespace OfficeDevPnP.Core
         private const string SHAREPOINT_PRINCIPAL = "00000003-0000-0ff1-ce00-000000000000";
 
         private SharePointOnlineCredentials sharepointOnlineCredentials;
-        private string appOnlyAccessToken;
-        private string azureADCredentialsToken;
+        private string appOnlyAccessToken;        
         private object tokenLock = new object();
         private CookieContainer fedAuth = null;
-        private string _contextUrl;
-        private TokenCache _tokenCache;
+
+#if !ONPREMISES
         private string _commonAuthority = "https://login.windows.net/Common";
         private static AuthenticationContext _authContext = null;
+        private string azureADCredentialsToken;
+        private string _contextUrl;
+        private TokenCache _tokenCache;
         private string _clientId;
         private Uri _redirectUri;
+#endif
 
         #region Construction
         public AuthenticationManager()
@@ -63,10 +66,10 @@ namespace OfficeDevPnP.Core
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 #endif
         }
-        #endregion
+#endregion
 
 
-        #region Authenticating against SharePoint Online using credentials or app-only
+#region Authenticating against SharePoint Online using credentials or app-only
         /// <summary>
         /// Returns a SharePointOnline ClientContext object
         /// </summary>
@@ -99,7 +102,7 @@ namespace OfficeDevPnP.Core
 
             var ctx = new ClientContext(siteUrl);
             ctx.Credentials = sharepointOnlineCredentials;
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             ctx.DisableReturnValueCache = true;
 #endif
 
@@ -145,7 +148,7 @@ namespace OfficeDevPnP.Core
         {
             EnsureToken(siteUrl, realm, appId, appSecret, acsHostUrl, globalEndPointPrefix);
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -382,7 +385,7 @@ namespace OfficeDevPnP.Core
             if (authCookiesContainer.Count > 0)
             {
                 var ctx = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 ctx.DisableReturnValueCache = true;
 #endif
                 ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = authCookiesContainer;
@@ -407,7 +410,7 @@ namespace OfficeDevPnP.Core
         {
             ClientContext clientContext = new ClientContext(siteUrl)
             {
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 DisableReturnValueCache = true,
 #endif
                 Credentials = new NetworkCredential(user, password, domain)
@@ -427,7 +430,7 @@ namespace OfficeDevPnP.Core
         {
             ClientContext clientContext = new ClientContext(siteUrl)
             {
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                 DisableReturnValueCache = true,
 #endif
                 Credentials = new NetworkCredential(user, password, domain)
@@ -501,7 +504,7 @@ namespace OfficeDevPnP.Core
         {
             var siteUri = new Uri(siteUrl);
             var clientContext = new ClientContext(siteUri);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -600,7 +603,7 @@ namespace OfficeDevPnP.Core
         {
             var siteUri = new Uri(siteUrl);
             var clientContext = new ClientContext(siteUri);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -657,7 +660,7 @@ namespace OfficeDevPnP.Core
             string resourceUri = spUri.Scheme + "://" + spUri.Authority;
 
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += (sender, args) =>
@@ -787,7 +790,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADWebApplicationAuthenticatedContext(String siteUrl, Func<String, String> accessTokenGetter)
         {
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += (sender, args) =>
@@ -811,7 +814,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADAccessTokenAuthenticatedContext(String siteUrl, String accessToken)
         {
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -823,7 +826,7 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
-#if !NETSTANDARD2_0
+#if !ONPREMISES && !NETSTANDARD2_0
         async void clientContext_NativeApplicationExecutingWebRequest(object sender, WebRequestEventArgs e)
         {
             var host = new Uri(_contextUrl);
@@ -834,9 +837,7 @@ namespace OfficeDevPnP.Core
                 e.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             }
         }
-#endif
 
-#if !NETSTANDARD2_0
         private async Task<AuthenticationResult> AcquireNativeApplicationTokenAsync(string authContextUrl, string resourceId)
         {
             AuthenticationResult ar = null;
@@ -974,7 +975,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
 
@@ -1046,10 +1047,10 @@ namespace OfficeDevPnP.Core
                     }
             }
         }
-        #endregion
+#endregion
 
 #if !NETSTANDARD2_0
-        #region Authenticating against SharePoint on-premises using ADFS based authentication
+#region Authenticating against SharePoint on-premises using ADFS based authentication
         /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
         /// </summary>
@@ -1065,7 +1066,7 @@ namespace OfficeDevPnP.Core
         {
 
             ClientContext clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
@@ -1122,7 +1123,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
@@ -1177,7 +1178,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetADFSKerberosMixedAuthenticationContext(string siteUrl, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clientContext.DisableReturnValueCache = true;
 #endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
@@ -1258,7 +1259,7 @@ namespace OfficeDevPnP.Core
             }
         }
 
-        #endregion
+#endregion
 #endif
     }
 }

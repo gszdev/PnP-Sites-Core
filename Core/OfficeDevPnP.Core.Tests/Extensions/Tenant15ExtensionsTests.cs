@@ -1,4 +1,5 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
@@ -11,13 +12,12 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
-#if ONPREMISES
     [TestClass()]
     public class Tenant15ExtensionsTests
     {
         private string sitecollectionName = "TestPnPSC_123456789";
 
-    #region Test initialize and cleanup
+        #region Test initialize and cleanup
         [TestInitialize()]
         public void Initialize()
         {
@@ -37,9 +37,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 CleanupCreatedTestSiteCollections(tenantContext);
             }
         }
-    #endregion
+        #endregion
 
-    #region Site collection creation and deletion
+        #region Site collection creation and deletion
         [TestMethod]
         public void CreateDeleteSiteCollectionTest()
         {
@@ -59,9 +59,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
         }
 
-    #endregion
+        #endregion
 
-    #region Helper methods
+        #region Helper methods
         private string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
         {
             Uri u = new Uri(devSiteUrl);
@@ -119,8 +119,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             tenant.CreateSiteCollection(siteToCreate);
             return siteToCreateUrl;
         }
-    #endregion
-
+        #endregion
     }
-#endif
 }
+
+#endif

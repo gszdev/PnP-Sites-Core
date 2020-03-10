@@ -50,7 +50,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
         }
 
 
-#region Helper methods
+        #region Helper methods
         private void CleanUpTestData(ClientContext cc)
         {
             DeleteLists(cc);
@@ -171,7 +171,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 }
             }
         }
-#endregion
+        #endregion
 
 #endif
 

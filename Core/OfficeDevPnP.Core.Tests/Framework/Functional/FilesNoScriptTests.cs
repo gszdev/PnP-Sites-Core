@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !SP2013 && !SP2016
+using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -11,7 +12,6 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
     [TestClass]
     public class FilesNoScriptTests : FunctionalTestBase
     {
@@ -83,5 +83,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #endregion
     }
-#endif
 }
+
+#endif

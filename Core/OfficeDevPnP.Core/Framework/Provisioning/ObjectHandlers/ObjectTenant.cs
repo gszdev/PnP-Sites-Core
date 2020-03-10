@@ -1,4 +1,5 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
@@ -8,7 +9,7 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+
     internal class ObjectTenant : ObjectHandlerBase
     {
         public override string Name
@@ -82,6 +83,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (_willProvision.Value);
         }
     }
+}
 
 #endif
-}

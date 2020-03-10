@@ -39,12 +39,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
             var result = new CanProvisionResult();
 
             // Target the root site collection
+            string tenantRootsiteUrl = null;
 #if !ONPREMISES
             tenant.EnsureProperty(t => t.RootSiteUrl);
-            var tenantRootsiteUrl = tenant.RootSiteUrl;
+            tenantRootsiteUrl = tenant.RootSiteUrl;
 #else
-            var tenantRootsiteUrl = tenant.GetTenantRootSiteUrl();
-            if (string.IsNullOrEmpty(tenant.RootSiteUrl))
+            tenantRootsiteUrl = tenant.GetTenantRootSiteUrl();
+            if (string.IsNullOrEmpty(tenantRootsiteUrl))
             {
                 return result;
             }

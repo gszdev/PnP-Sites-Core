@@ -299,7 +299,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.ExecuteQueryRetry();
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
+#if !ONPREMISES
                 Assert.IsFalse(template.Security.SiteGroups.Any());
+#else
+                Assert.IsTrue(template.Security.SiteGroups.Any());
+#endif
 
                 // tbd: fix those...
                 //Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedOwnerGroup.Title, web), template.Security.AssociatedOwnerGroup, "Associated owner group title mismatch.");
@@ -966,6 +970,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             {
                 siteCollectionCreationInformation.Owner = TestCommon.DefaultSiteOwner;
             }
+            /*
+#if ONPREMISES
+            if (string.IsNullOrEmpty(siteCollectionCreationInformation.Owner)
+                && !string.IsNullOrEmpty(TestCommon.DefaultSiteOwner))
+            {
+                siteCollectionCreationInformation.Owner = TestCommon.DefaultSiteOwner;
+            }
+#endif
+            */
 
             var commResults = await clientContext.CreateSiteAsync(siteCollectionCreationInformation);
             Assert.IsNotNull(commResults);

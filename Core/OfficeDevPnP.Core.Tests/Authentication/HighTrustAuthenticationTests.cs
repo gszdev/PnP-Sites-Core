@@ -1,18 +1,18 @@
-﻿using System;
+﻿#if ONPREMISES
+using System;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Security.Cryptography.X509Certificates;
 
 namespace OfficeDevPnP.Core.Tests.Authentication
 {
-#if ONPREMISES
     /// <summary>
     /// Tests which will utilize a High Trust certificate to communicate with an on-premises SharePoint environment
     /// </summary>
     [TestClass]
     public class HighTrustAuthenticationTests
     {
-    #region Test initialization
+        #region Test initialization
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         public static void ClassCleanup()
         {
         }
-    #endregion
+        #endregion
 
         /// <summary>
         /// Test which will take a PFX certificate through a file path reference to build a High Trust oAuth JWT token towards an on-premises SharePoint environment
@@ -31,8 +31,11 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         public void CertificateFileAppOnlyAuthenticationTest()
         {
             string siteUrl = TestCommon.DevSiteUrl;
-            // string clientId = TestCommon.AppId;
             string clientId = TestCommon.HighTrustClientId;
+            if (string.IsNullOrEmpty(clientId))
+            {
+                clientId = TestCommon.AppId;
+            }
             string certificatePath = TestCommon.HighTrustCertificatePath;
             string certificatePassword = TestCommon.HighTrustCertificatePassword;
             string certificateIssuerId = TestCommon.HighTrustIssuerId;
@@ -74,8 +77,11 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         public void CertificateFromStoreAppOnlyAuthenticationTest()
         {
             string siteUrl = TestCommon.DevSiteUrl;
-            // string clientId = TestCommon.AppId;
             string clientId = TestCommon.HighTrustClientId;
+            if (string.IsNullOrEmpty(clientId))
+            {
+                clientId = TestCommon.AppId;
+            }
             StoreName? certificateStoreName = TestCommon.HighTrustCertificateStoreName;
             StoreLocation? certificateStoreLocation = TestCommon.HighTrustCertificateStoreLocation;
             string certificateStoreThumbprint = TestCommon.HighTrustCertificateStoreThumbprint;
@@ -112,5 +118,5 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             }
         }
     }
-#endif
 }
+#endif

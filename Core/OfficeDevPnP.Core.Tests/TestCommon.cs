@@ -114,6 +114,37 @@ namespace OfficeDevPnP.Core.Tests
                         OnPremUseHighTrustCertificate = tempOnPremUseHighTrustCertificate;
                     }
                 }
+
+                HighTrustClientId = AppSetting("HighTrustClientId");
+                if (string.IsNullOrEmpty(HighTrustClientId))
+                {
+                    HighTrustClientId = AppSetting("AppId");
+                }
+
+                HighTrustCertificatePassword = AppSetting("HighTrustCertificatePassword");
+                HighTrustCertificatePath = AppSetting("HighTrustCertificatePath");
+                HighTrustIssuerId = AppSetting("HighTrustIssuerId");
+                HighTrustBehalfOfUserLoginName = AppSetting("HighTrustBehalfOfUserLoginName");
+
+                if (!String.IsNullOrEmpty(AppSetting("HighTrustCertificateStoreName")))
+                {
+                    StoreName result;
+                    if (Enum.TryParse(AppSetting("HighTrustCertificateStoreName"), out result))
+                    {
+                        HighTrustCertificateStoreName = result;
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(AppSetting("HighTrustCertificateStoreLocation")))
+                {
+                    StoreLocation result;
+                    if (Enum.TryParse(AppSetting("HighTrustCertificateStoreLocation"), out result))
+                    {
+                        HighTrustCertificateStoreLocation = result;
+                    }
+                }
+
+                HighTrustCertificateStoreThumbprint = AppSetting("HighTrustCertificateStoreThumbprint").Replace(" ", string.Empty);
 #endif
                 var spoUseAppOnlyValue = AppSetting("SPOUseAppOnly");
                 if (!string.IsNullOrEmpty(spoUseAppOnlyValue))

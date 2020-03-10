@@ -529,8 +529,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
 
-                testList.AddContentTypeToList(ct);
-
+                testList.AddContentTypeToList(ct);                
                 testList.SetDefaultContentTypeToList(ct);
                 clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
                 clientContext.ExecuteQueryRetry();

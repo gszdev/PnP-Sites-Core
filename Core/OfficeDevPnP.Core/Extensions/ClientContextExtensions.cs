@@ -140,7 +140,7 @@ namespace Microsoft.SharePoint.Client
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                     clientContext.DisableReturnValueCache = true;
 #endif
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
@@ -336,7 +336,7 @@ namespace Microsoft.SharePoint.Client
             ClientContext clonedClientContext = targetContext;
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
             clonedClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
 
@@ -383,7 +383,7 @@ namespace Microsoft.SharePoint.Client
                             //Take over the form digest handling setting
                             newClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
                             newClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                             newClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
                             return newClientContext;
@@ -854,7 +854,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#if !SP2013 && !SP2016 && !SP2019
+#if !ONPREMISES
         /// <summary>
         /// BETA: Creates a Team Site Collection
         /// </summary>
