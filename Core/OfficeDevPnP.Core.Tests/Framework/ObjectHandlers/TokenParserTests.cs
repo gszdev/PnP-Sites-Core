@@ -37,6 +37,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var expectedRoleDefinitionId = 1073741826;
                 var roleDefinition = ctx.Web.RoleDefinitions.GetById(expectedRoleDefinitionId);
                 ctx.Load(roleDefinition);
+#if SP2019
+                if (TestCommon.AppOnlyTesting())
+                { 
+                    ctx.Web.CreateDefaultAssociatedGroups(TestCommon.DefaultSiteOwner, TestCommon.DefaultSiteOwner, string.Empty); 
+                }
+                else
+                {
+                    ctx.Web.CreateDefaultAssociatedGroups(string.Empty, string.Empty, string.Empty);
+                } 
+#endif
 
                 ctx.ExecuteQueryRetry();
 

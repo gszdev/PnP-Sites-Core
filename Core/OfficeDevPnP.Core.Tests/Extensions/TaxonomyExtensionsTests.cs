@@ -32,7 +32,7 @@ namespace Microsoft.SharePoint.Client.Tests
         [TestInitialize]
         public void Initialize()
         {
-            if (!TestCommon.AppOnlyTesting())
+            if (TestCommon.IsTaxonomyTestingSupported)
             {
                 Console.WriteLine("TaxonomyExtensionsTests.Initialise");
                 // Create some taxonomy groups and terms

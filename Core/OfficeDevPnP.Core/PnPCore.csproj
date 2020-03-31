@@ -18,6 +18,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>bin\ReleaseCore\</OutputPath>
+    <DefineConstants>TRACE;NETSTANDARD2_0</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -73,6 +74,7 @@
     <PackageReference Include="Microsoft.Graph" Version="1.7.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.2" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.1" />
+    <PackageReference Include="Microsoft.SharePointOnline.CSOM" Version="16.1.19814.12000" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Portable.Xaml" Version="0.21.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
@@ -84,9 +86,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SharePointPnP.Client">
+    <!--<Reference Include="SharePointPnP.Client">
       <HintPath>..\..\Assemblies\16.1\SharePointPnP.Client.dll</HintPath>
-    </Reference>
+    </Reference>-->
   </ItemGroup>
 
   <ItemGroup>

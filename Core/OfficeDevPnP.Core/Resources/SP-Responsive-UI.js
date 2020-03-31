@@ -1,3 +1,5 @@
+ // SP-Responsive-UI.js
+
 /**
  * PnP SharePoint - Responsiveness
  * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}

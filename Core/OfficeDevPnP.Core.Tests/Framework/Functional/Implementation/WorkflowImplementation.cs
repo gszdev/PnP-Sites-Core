@@ -18,7 +18,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
 
 
-                var result = TestProvisioningTemplate(cc, "workflows_add_1605.xml", Handlers.Lists | Handlers.Workflows, null, ptci);
+#if !SP2013
+                string xmlFileName = "workflows_add_1605.xml";
+#else
+                // pnp:WorkflowSubscription ParentContentTypeId="" not availiable for comparing
+                string xmlFileName = "workflows_add_1605.SP2013.xml";
+#endif
+
+
+                var result = TestProvisioningTemplate(cc, xmlFileName, Handlers.Lists | Handlers.Workflows, null, ptci);
                 WorkflowValidator wv = new WorkflowValidator();
                 Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows, result.TargetTemplate.Workflows, result.TargetTokenParser));
             }

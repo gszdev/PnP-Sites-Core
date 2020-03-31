@@ -316,7 +316,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                }
 
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                     var store = session.GetDefaultKeywordsTermStore();
@@ -373,7 +376,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                }
 
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                     var store = session.GetDefaultKeywordsTermStore();

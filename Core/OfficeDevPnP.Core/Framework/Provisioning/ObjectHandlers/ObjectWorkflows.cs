@@ -123,6 +123,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 ManualStartBypassesActivationLimit = s.ManualStartBypassesActivationLimit,
                                 Name = s.Name,
                                 ListId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+#if !SP2013
+                                ParentContentTypeId = s.ParentContentTypeId,
+#endif
                                 StatusFieldName = s.StatusFieldName,
                             }
                             );
@@ -260,7 +263,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     workflowDefinition.RestrictToScope = parser.ParseString(templateDefinition.RestrictToScope);
                                     workflowDefinition.RestrictToType = templateDefinition.RestrictToType != "Universal" ? templateDefinition.RestrictToType : null;
                                     workflowDefinition.Xaml = parser.ParseXmlString(xaml.ToString());
-
+                                    
                                     var updatedDefinition = deploymentService.SaveDefinition(workflowDefinition);
                                     web.Context.ExecuteQueryRetry();
 
