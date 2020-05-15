@@ -2740,7 +2740,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             taxField.EnsureProperties(f => f.TextField, f => f.Id);
 
                             var noteField = siteList.Fields.GetById(taxField.TextField);
-                            web.Context.Load(noteField, nf => nf.Id, nf => nf.Title, nf => nf.Required, nf => nf.Hidden, nf => nf.InternalName);
+                            web.Context.Load(noteField, 
+                                nf => nf.Id,
+                                nf => nf.Title, 
+                                nf => nf.Required, 
+                                nf => nf.Hidden, 
+                                nf => nf.InternalName);
                             web.Context.ExecuteQueryRetry();
 
                             list.FieldRefs.Insert(0, new FieldRef(noteField.InternalName)
